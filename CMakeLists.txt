@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 3.0)
+project(libbear)
+file(GLOB_RECURSE sources *.cc *.h core/*.cc core/*.h ea/*.cc ea/*.h)
+add_executable(libbear ${sources})
+target_compile_options(libbear PUBLIC -std=c++20 -fconcepts -Wall -Wextra -pedantic -O3)
