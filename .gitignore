@@ -1,3 +1,10 @@
+CMakeFiles/*
+Makefile
+cmake*
+CMakeCache.txt
+*~
+libbear*
+
 # Prerequisites
 *.d
 
