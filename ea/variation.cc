@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include "elements.h"
 #include "genotype.h"
 #include "variation.h"
@@ -90,7 +91,7 @@ libbear::variation::
 operator()(const population& p) const
 {
   if (p.size() % 2) {
-    throw 42;
+    throw std::invalid_argument{"variation: wrong population size"};
   }
   population res;
   for (std::size_t i = 0; i < p.size(); i += 2) {
