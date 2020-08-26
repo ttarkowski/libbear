@@ -1,6 +1,6 @@
 #include <cassert>
 #include <iostream>
-#include "ea/genotype.h"
+#include <libbear/ea/genotype.h>
 
 int main() {
   using namespace libbear;

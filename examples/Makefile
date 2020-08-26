@@ -1,6 +1,6 @@
 SHELL      = /bin/bash
 CXX        = g++-10
-CXXFLAGS   = -Wall -Wextra -pedantic -O3 -std=c++20 -fconcepts -g -ggdb -I../../
+CXXFLAGS   = -Wall -Wextra -pedantic -O3 -std=c++20 -fconcepts -g -ggdb -I../../../
 LDFLAGS    = -L../../ -lbear
 TARGET     = example
 SOURCES    = $(shell echo *.cc)
