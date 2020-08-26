@@ -11,3 +11,7 @@ all: $(TARGET)
 
 $(TARGET): $(OBJECTS)
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $(TARGET) $(OBJECTS)
+
+.PHONY: clean
+clean:
+	rm *~ core/*~ ea/*~ core/*.o ea/*.o $(TARGET)
