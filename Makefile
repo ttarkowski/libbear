@@ -10,8 +10,8 @@ OBJECTS  = $(SOURCES:.cc=.o)
 all: $(TARGET)
 
 $(TARGET): $(OBJECTS)
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $(TARGET) $(OBJECTS)
+	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJECTS) $(LDFLAGS)
 
 .PHONY: clean
 clean:
-	rm *~ core/*~ ea/*~ core/*.o ea/*.o $(TARGET)
+	rm -f *~ core/*~ ea/*~ core/*.o ea/*.o $(TARGET)
