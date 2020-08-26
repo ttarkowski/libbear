@@ -2,7 +2,7 @@ SHELL    = /bin/bash
 CXX      = g++-10
 CXXFLAGS = -Wall -Wextra -pedantic -O3 -std=c++20 -fconcepts -g -ggdb -I../../
 LDFLAGS  = -L../../ -lbear
-TARGET   = libbear.so
+TARGET   = example
 SOURCES  = $(shell echo *.cc)
 HEADERS  = $(shell echo *.h)
 OBJECTS  = $(SOURCES:.cc=.o)
@@ -17,4 +17,4 @@ run:
 
 .PHONY: clean
 clean:
-	rm -f *~ core/*~ ea/*~ core/*.o ea/*.o $(TARGET)
+	rm -f *~ *.o $(TARGET)
