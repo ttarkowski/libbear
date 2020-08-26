@@ -25,6 +25,7 @@ namespace libbear {
     
   public:
     template<typename... Ts> explicit(sizeof...(Ts) == 1) genotype(Ts... ts);
+    template<typename... Ts> explicit(sizeof...(Ts) == 1) genotype(std::shared_ptr<Ts>... sps);
     std::size_t size() const;
     value_type operator[](std::size_t i) const;
     const_iterator begin() const;
@@ -51,7 +52,11 @@ struct std::hash<libbear::genotype> {
 template<typename... Ts>
 libbear::genotype::genotype(Ts... ts)
   : chain_{std::make_shared<gene<const Ts>>(ts)...}
-{
-}
+{}
+
+template<typename... Ts>
+libbear::genotype::genotype(std::shared_ptr<Ts>... sps)
+  : chain_{sps...}
+{}
 
 #endif // LIBBEAR_EA_GENOTYPE_H
