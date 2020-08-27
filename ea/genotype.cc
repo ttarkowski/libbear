@@ -54,6 +54,16 @@ operator!=(const genotype& g) const
   return !operator==(g);
 }
 
+libbear::genotype&
+libbear::genotype::
+random_reset()
+{
+  for (auto& x : *this) {
+    x->random_reset();
+  }
+  return *this;
+}
+
 std::ostream&
 libbear::
 operator<<(std::ostream& os, const genotype& g)

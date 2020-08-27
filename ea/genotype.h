@@ -34,6 +34,7 @@ namespace libbear {
     const_iterator end() const;
     bool operator==(const genotype& g) const;
     bool operator!=(const genotype& g) const;
+    genotype& random_reset();
     friend std::ostream& operator<<(std::ostream& os, const genotype& g);
     
   private:
