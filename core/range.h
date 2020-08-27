@@ -22,7 +22,8 @@ namespace libbear {
 // IMPLEMENTATION
 
 template<typename T>
-libbear::range<T>::range(T min, T max)
+libbear::range<T>::
+range(T min, T max)
   : min_{min}
   , max_{max}
 {
@@ -32,13 +33,17 @@ libbear::range<T>::range(T min, T max)
 }
 
 template<typename T>
-bool libbear::range<T>::contains(T t) const
+bool
+libbear::range<T>::
+contains(T t) const
 {
   return t >= min_ && t <= max_;
 }
 
 template<typename T>
-bool libbear::range<T>::operator==(const range<T>& r) const
+bool
+libbear::range<T>::
+operator==(const range<T>& r) const
 {
   return min_ == r.min_ && max_ == r.max_;
 }

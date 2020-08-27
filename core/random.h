@@ -31,7 +31,9 @@ namespace libbear {
 // IMPLEMENTATION
   
 template<typename T>
-T libbear::random_from_normal_distribution(T mean, T standard_deviation)
+T
+libbear::
+random_from_normal_distribution(T mean, T standard_deviation)
 {
   static_assert(std::is_floating_point_v<T>);
   auto& generator{ random_engine() };
@@ -39,7 +41,9 @@ T libbear::random_from_normal_distribution(T mean, T standard_deviation)
 }
 
 template<typename T>
-T libbear::random_from_uniform_distribution(T a, T b)
+T
+libbear::
+random_from_uniform_distribution(T a, T b)
 {
   auto& generator{ random_engine() };
   if constexpr (std::is_floating_point_v<T>) {
@@ -59,7 +63,9 @@ T libbear::random_from_uniform_distribution(T a, T b)
 }
 
 template<typename T>
-T libbear::random(const range<T>& r)
+T
+libbear::
+random(const range<T>& r)
 {
   return random_from_uniform_distribution<T>(r.min(), r.max());
 }

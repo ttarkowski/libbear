@@ -53,12 +53,14 @@ struct std::hash<libbear::genotype> {
 // IMPLEMENTATION
 
 template<typename... Ts>
-libbear::genotype::genotype(Ts... ts)
+libbear::genotype::
+genotype(Ts... ts)
   : chain_{std::make_shared<gene<Ts>>(ts)...}
 {}
 
 template<typename... Ts>
-libbear::genotype::genotype(std::shared_ptr<Ts>... sps)
+libbear::genotype::
+genotype(std::shared_ptr<Ts>... sps)
   : chain_{sps...}
 {}
 
