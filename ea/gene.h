@@ -1,5 +1,5 @@
 #ifndef LIBBEAR_EA_GENE_H
-65;6003;1c#define LIBBEAR_EA_GENE_H
+#define LIBBEAR_EA_GENE_H
 
 #include <iosfwd>
 #include <limits>
