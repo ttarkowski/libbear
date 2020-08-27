@@ -27,6 +27,7 @@ namespace libbear {
     template<typename... Ts> explicit(sizeof...(Ts) == 1) genotype(Ts... ts);
     template<typename... Ts> explicit(sizeof...(Ts) == 1) genotype(std::shared_ptr<Ts>... sps);
     genotype(const genotype&) = default;
+    genotype& operator=(const genotype&) = default;
     std::size_t size() const;
     value_type operator[](std::size_t i) const;
     const_iterator begin() const;
@@ -36,7 +37,7 @@ namespace libbear {
     friend std::ostream& operator<<(std::ostream& os, const genotype& g);
     
   private:
-    const chain chain_;  
+    chain chain_;
   };
   
   std::ostream& operator<<(std::ostream&, const genotype&);
@@ -52,7 +53,7 @@ struct std::hash<libbear::genotype> {
 
 template<typename... Ts>
 libbear::genotype::genotype(Ts... ts)
-  : chain_{std::make_shared<gene<const Ts>>(ts)...}
+  : chain_{std::make_shared<gene<Ts>>(ts)...}
 {}
 
 template<typename... Ts>
