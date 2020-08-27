@@ -1,8 +1,8 @@
 #ifndef LIBBEAR_EA_VARIATION_H
 #define LIBBEAR_EA_VARIATION_H
 
-#include "elements.h"
-#include "../core/random.h"
+#include <libbear/core/random.h>
+#include <libbear/ea/elements.h>
 
 namespace libbear {
   

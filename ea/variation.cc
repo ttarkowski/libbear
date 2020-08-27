@@ -1,7 +1,7 @@
 #include <stdexcept>
-#include "elements.h"
-#include "genotype.h"
-#include "variation.h"
+#include <libbear/ea/elements.h>
+#include <libbear/ea/genotype.h>
+#include <libbear/ea/variation.h>
 
 libbear::population
 libbear::

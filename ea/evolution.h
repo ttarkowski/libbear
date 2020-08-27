@@ -2,8 +2,8 @@
 #define LIBBEAR_EVOLUTION_H
 
 #include <cstddef>
-#include "elements.h"
-#include "variation.h"
+#include <libbear/ea/elements.h>
+#include <libbear/ea/variation.h>
 
 namespace libbear {
 

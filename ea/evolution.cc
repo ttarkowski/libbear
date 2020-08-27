@@ -1,7 +1,7 @@
 #include <cstddef>
-#include "elements.h"
-#include "evolution.h"
-#include "genotype.h"
+#include <libbear/ea/elements.h>
+#include <libbear/ea/evolution.h>
+#include <libbear/ea/genotype.h>
 
 libbear::generation_creator::
 generation_creator(const populate_fns& p, const options& o)

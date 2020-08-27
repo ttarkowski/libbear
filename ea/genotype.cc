@@ -2,7 +2,7 @@
 #include <functional>
 #include <iostream>
 #include <iterator>
-#include "genotype.h"
+#include <libbear/ea/genotype.h>
 
 std::size_t
 libbear::genotype::

@@ -3,7 +3,7 @@
 
 #include <functional>
 #include <vector>
-#include "../core/random.h"
+#include <libbear/core/random.h>
 
 namespace libbear {
 

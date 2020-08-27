@@ -1,5 +1,5 @@
 #include <iostream>
-#include "gene.h"
+#include <libbear/ea/gene.h>
 
 std::ostream&
 libbear::

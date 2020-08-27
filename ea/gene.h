@@ -4,8 +4,8 @@
 #include <iosfwd>
 #include <memory>
 #include <stdexcept>
-#include "elements.h"
-#include "../core/range.h"
+#include <libbear/core/range.h>
+#include <libbear/ea/elements.h>
 
 namespace libbear {
 

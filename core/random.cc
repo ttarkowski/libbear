@@ -1,5 +1,5 @@
 #include <random>
-#include "random.h"
+#include <libbear/core/random.h>
 
 std::mt19937&
 libbear::

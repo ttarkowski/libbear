@@ -2,9 +2,9 @@
 #include <cstddef>
 #include <iterator>
 #include <numeric>
-#include "elements.h"
-#include "fitness.h"
-#include "genotype.h"
+#include <libbear/ea/elements.h>
+#include <libbear/ea/fitness.h>
+#include <libbear/ea/genotype.h>
 
 libbear::fitness_function::
 fitness_function(const function& f)

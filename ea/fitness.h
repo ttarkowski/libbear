@@ -5,7 +5,7 @@
 #include <functional>
 #include <map>
 #include <memory>
-#include "elements.h"
+#include <libbear/ea/elements.h>
 
 namespace libbear {
 

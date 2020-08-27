@@ -6,8 +6,8 @@
 #include <memory>
 #include <set>
 #include <vector>
-#include "elements.h"
-#include "gene.h"
+#include <libbear/ea/elements.h>
+#include <libbear/ea/gene.h>
 
 struct std::hash<libbear::genotype>;
 
