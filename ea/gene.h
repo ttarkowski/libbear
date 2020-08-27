@@ -2,8 +2,10 @@
 #define LIBBEAR_EA_GENE_H
 
 #include <iosfwd>
+#include <limits>
 #include <memory>
 #include <stdexcept>
+#include <libbear/core/random.h>
 #include <libbear/core/range.h>
 #include <libbear/ea/elements.h>
 
@@ -15,6 +17,7 @@ namespace libbear {
     
   public:
     virtual ~basic_gene() = default;
+    virtual basic_gene& random_reset() = 0;
     friend std::ostream& operator<<(std::ostream& os, const basic_gene& bg);
     friend bool operator==(const basic_gene& l, const basic_gene& r);
     friend bool operator!=(const basic_gene& l, const basic_gene& r);
@@ -39,6 +42,8 @@ namespace libbear {
     explicit gene(T t);
     gene(const gene&) = default;
     T value() const;
+    gene& value(T t);
+    gene& random_reset() override;
     
   protected:
     bool equal(const basic_gene& bg) const override;
@@ -47,7 +52,7 @@ namespace libbear {
     void print(std::ostream& os) const override;
     
   private:
-    const T value_;
+    T value_;
   };
   
   template<typename T>
@@ -58,12 +63,13 @@ namespace libbear {
   public:
     constrained_gene(T t, range<T> r);
     range<T> constraints() const;
+    constrained_gene& random_reset() override;
     
   protected:
     bool equal(const basic_gene& bg) const override;
     
   private:
-    const range<T> constraints_;
+    range<T> constraints_;
   };
   
 } // namespace libbear
@@ -80,6 +86,21 @@ template<typename T>
 T libbear::gene<T>::value() const
 {
   return value_;
+}
+
+template<typename T>
+libbear::gene<T>& libbear::gene<T>::value(T t)
+{
+  value_ = t;
+  return *this;
+}
+
+template<typename T>
+libbear::gene<T>& libbear::gene<T>::random_reset()
+{
+  value_ = random_from_uniform_distribution<T>(std::numeric_limits<T>::lowest(),
+                                               std::numeric_limits<T>::max());
+  return *this;
 }
   
 template<typename T>
@@ -108,6 +129,14 @@ template<typename T>
 libbear::range<T> libbear::constrained_gene<T>::constraints() const
 {
   return constraints_;
+}
+
+template<typename T>
+libbear::constrained_gene<T>& libbear::constrained_gene<T>::random_reset()
+{
+  value(random_from_uniform_distribution<T>(constraints_.min(),
+                                            constraints_.max()));
+  return *this;
 }
 
 template<typename T>
