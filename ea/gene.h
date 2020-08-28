@@ -11,9 +11,24 @@
 
 namespace libbear {
 
+  class basic_gene;
   template<typename T> class gene;
+  template<typename T> class constrained_gene;
 
-  class basic_gene {
+  namespace detail {
+
+    // My intention is to restrict inheritance from basic_gene. I can
+    // approximate that goal with deleting constructors of derived
+    // classes different than gene and constrained_gene:
+    class basic_gene_restrictions {
+      basic_gene_restrictions() = default;
+      template<typename T> friend class gene;
+      template<typename T> friend class constrained_gene;
+    };
+
+  }
+
+  class basic_gene : virtual detail::basic_gene_restrictions {
   public:
     using ptr = std::shared_ptr<basic_gene>;
     
@@ -61,7 +76,7 @@ namespace libbear {
   };
   
   template<typename T>
-  class constrained_gene : public gene<T> {
+  class constrained_gene final : public gene<T> {
   public:
     using ptr = typename std::shared_ptr<constrained_gene<T>>;
     
