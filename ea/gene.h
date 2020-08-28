@@ -53,8 +53,9 @@ namespace libbear {
     bool equal(const basic_gene& bg) const override;
     
   private:
+    using basic_gene::value;
     void print(std::ostream& os) const override;
-    
+
   private:
     T value_;
   };
