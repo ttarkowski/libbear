@@ -11,12 +11,16 @@
 
 namespace libbear {
 
+  template<typename T> class gene;
+
   class basic_gene {
   public:
     using ptr = std::shared_ptr<basic_gene>;
     
   public:
     virtual ~basic_gene() = default;
+    template<typename T> T value() const;
+    template<typename T> gene<T>& value(T t);
     virtual basic_gene& random_reset() = 0;
     friend std::ostream& operator<<(std::ostream& os, const basic_gene& bg);
     friend bool operator==(const basic_gene& l, const basic_gene& r);
@@ -75,6 +79,22 @@ namespace libbear {
 } // namespace libbear
 
 // IMPLEMENTATION
+
+template<typename T>
+T
+libbear::basic_gene::
+value() const
+{
+  return static_cast<const gene<T>*>(this)->value();
+}
+
+template<typename T>
+libbear::gene<T>&
+libbear::basic_gene::
+value(T t)
+{
+  return static_cast<gene<T>*>(this)->value(t);
+}
 
 template<typename T>
 libbear::gene<T>::
