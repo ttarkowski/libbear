@@ -17,11 +17,11 @@ namespace libbear {
 
   namespace detail {
 
-    // My intention is to restrict inheritance from basic_gene. I can
-    // approximate that goal with deleting constructors of derived
-    // classes different than gene and constrained_gene:
     class basic_gene_restrictions {
       friend class libbear::basic_gene;
+      // Classes derived from basic_gene have deleted ctors. Only classes listed
+      // below are allowed to have them. (This is workaround to the problem of
+      // restricting inheriance from basic_gene.)
       template<typename T> friend class libbear::gene;
       template<typename T> friend class libbear::constrained_gene;
       
@@ -107,6 +107,8 @@ T
 libbear::basic_gene::
 value() const
 {
+  // I can perform downcast, because I have previously limited set of usable
+  // classes. For more details please see note for basic_gene_restrictions.
   return static_cast<const gene<T>*>(this)->value();
 }
 
