@@ -21,9 +21,15 @@ namespace libbear {
     // approximate that goal with deleting constructors of derived
     // classes different than gene and constrained_gene:
     class basic_gene_restrictions {
+      friend class libbear::basic_gene;
+      template<typename T> friend class libbear::gene;
+      template<typename T> friend class libbear::constrained_gene;
+      
+    private:
       basic_gene_restrictions() = default;
-      template<typename T> friend class gene;
-      template<typename T> friend class constrained_gene;
+      
+    public:
+      virtual ~basic_gene_restrictions() = default;
     };
 
   }
@@ -51,7 +57,7 @@ namespace libbear {
   std::ostream& operator<<(std::ostream&, const basic_gene&);
   bool operator==(const basic_gene&, const basic_gene&);
   bool operator!=(const basic_gene&, const basic_gene&);
-    
+  
   template<typename T>
   class gene : public basic_gene {
   public:
@@ -63,7 +69,7 @@ namespace libbear {
     T value() const;
     gene& value(T t);
     gene& random_reset() override;
-    
+
   protected:
     bool equal(const basic_gene& bg) const override;
     
