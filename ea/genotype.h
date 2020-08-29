@@ -19,7 +19,7 @@ namespace libbear {
   public:
     using point = std::size_t;
     using crossover_points = std::set<point>;
-    using chain = std::vector<basic_gene::ptr>;
+    using chain = std::vector<detail::basic_gene::ptr>;
     using value_type = typename chain::value_type;
     using const_iterator = typename chain::const_iterator;
     

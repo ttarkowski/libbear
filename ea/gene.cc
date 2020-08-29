@@ -2,7 +2,7 @@
 #include <libbear/ea/gene.h>
 
 std::ostream&
-libbear::
+libbear::detail::
 operator<<(std::ostream& os, const basic_gene& bg)
 {
   bg.print(os);
@@ -10,22 +10,22 @@ operator<<(std::ostream& os, const basic_gene& bg)
 }
 
 bool
-libbear::
+libbear::detail::
 operator==(const basic_gene& l, const basic_gene& r)
 {
   return typeid(l) == typeid(r) && l.equal(r);
 }
 
 bool
-libbear::
+libbear::detail::
 operator!=(const basic_gene& l, const basic_gene& r)
 {
   return !operator==(l, r);
 }
 
 bool
-libbear::basic_gene::
-equal(const basic_gene&) const
+libbear::detail::basic_gene::
+equal(const detail::basic_gene&) const
 {
   return true;
 }

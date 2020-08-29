@@ -11,14 +11,15 @@
 
 namespace libbear {
 
-  class basic_gene;
   template<typename T> class gene;
   template<typename T> class constrained_gene;
 
   namespace detail {
 
+    class basic_gene;
+    
     class basic_gene_restrictions {
-      friend class libbear::basic_gene;
+      friend class libbear::detail::basic_gene;
       // Classes derived from basic_gene have deleted ctors. Only classes listed
       // below are allowed to have them. (This is workaround to the problem of
       // restricting inheriance from basic_gene.)
@@ -32,34 +33,34 @@ namespace libbear {
       virtual ~basic_gene_restrictions() = default;
     };
 
+    class basic_gene : virtual basic_gene_restrictions {
+    public:
+      using ptr = std::shared_ptr<basic_gene>;
+      
+    public:
+      virtual ~basic_gene() = default;
+      template<typename T> T value() const;
+      template<typename T> gene<T>& value(T t);
+      virtual basic_gene& random_reset() = 0;
+      friend std::ostream& operator<<(std::ostream& os, const basic_gene& bg);
+      friend bool operator==(const basic_gene& l, const basic_gene& r);
+      friend bool operator!=(const basic_gene& l, const basic_gene& r);
+      
+    protected:
+      virtual bool equal(const basic_gene&) const;
+      
+    private:
+      virtual void print(std::ostream&) const = 0;
+    };
+    
+    std::ostream& operator<<(std::ostream&, const basic_gene&);
+    bool operator==(const basic_gene&, const basic_gene&);
+    bool operator!=(const basic_gene&, const basic_gene&);
+  
   }
 
-  class basic_gene : virtual detail::basic_gene_restrictions {
-  public:
-    using ptr = std::shared_ptr<basic_gene>;
-    
-  public:
-    virtual ~basic_gene() = default;
-    template<typename T> T value() const;
-    template<typename T> gene<T>& value(T t);
-    virtual basic_gene& random_reset() = 0;
-    friend std::ostream& operator<<(std::ostream& os, const basic_gene& bg);
-    friend bool operator==(const basic_gene& l, const basic_gene& r);
-    friend bool operator!=(const basic_gene& l, const basic_gene& r);
-    
-  protected:
-    virtual bool equal(const basic_gene&) const;
-    
-  private:
-    virtual void print(std::ostream&) const = 0;
-  };
-  
-  std::ostream& operator<<(std::ostream&, const basic_gene&);
-  bool operator==(const basic_gene&, const basic_gene&);
-  bool operator!=(const basic_gene&, const basic_gene&);
-  
   template<typename T>
-  class gene : public basic_gene {
+  class gene : public detail::basic_gene {
   public:
     using ptr = std::shared_ptr<gene>;
     
@@ -71,10 +72,10 @@ namespace libbear {
     gene& random_reset() override;
 
   protected:
-    bool equal(const basic_gene& bg) const override;
+    bool equal(const detail::basic_gene& bg) const override;
     
   private:
-    using basic_gene::value;
+    using detail::basic_gene::value;
     void print(std::ostream& os) const override;
 
   private:
@@ -92,7 +93,7 @@ namespace libbear {
     constrained_gene& random_reset() override;
     
   protected:
-    bool equal(const basic_gene& bg) const override;
+    bool equal(const detail::basic_gene& bg) const override;
     
   private:
     range<T> constraints_;
@@ -104,7 +105,7 @@ namespace libbear {
 
 template<typename T>
 T
-libbear::basic_gene::
+libbear::detail::basic_gene::
 value() const
 {
   // I can perform downcast, because I have previously limited set of usable
@@ -114,7 +115,7 @@ value() const
 
 template<typename T>
 libbear::gene<T>&
-libbear::basic_gene::
+libbear::detail::basic_gene::
 value(T t)
 {
   return static_cast<gene<T>*>(this)->value(t);
@@ -157,10 +158,10 @@ random_reset()
 template<typename T>
 bool
 libbear::gene<T>::
-equal(const basic_gene& bg) const
+equal(const detail::basic_gene& bg) const
 {
   const auto g = static_cast<const gene&>(bg);
-  return basic_gene::equal(g) && g.value_ == value_;
+  return detail::basic_gene::equal(g) && g.value_ == value_;
 }
 
 template<typename T> 
@@ -202,7 +203,7 @@ random_reset()
 template<typename T>
 bool
 libbear::constrained_gene<T>::
-equal(const basic_gene& bg) const
+equal(const detail::basic_gene& bg) const
 {
   const auto cg = static_cast<const constrained_gene&>(bg);
   return gene<T>::equal(cg) && cg.constraints_ == constraints_;
