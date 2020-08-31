@@ -195,8 +195,8 @@ libbear::constrained_gene<T>&
 libbear::constrained_gene<T>::
 random_reset()
 {
-  value(random_from_uniform_distribution<T>(constraints_.min(),
-                                            constraints_.max()));
+  this->value(random_from_uniform_distribution<T>(constraints_.min(),
+                                                  constraints_.max()));
   return *this;
 }
 
