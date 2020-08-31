@@ -9,14 +9,17 @@ namespace libbear {
   class range {
   public:
     range(T min, T max);
+    range(const range&) = default;
+    range& operator=(const range&) = default;
     T min() const;
     T max() const;
     bool contains(T t) const;
     bool operator==(const range<T>& r) const;
+    bool operator!=(const range<T>& r) const;
     
   private:
-    const T min_;
-    const T max_;
+    T min_;
+    T max_;
   };
   
 } // namespace libbear
@@ -64,6 +67,14 @@ libbear::range<T>::
 operator==(const range<T>& r) const
 {
   return min_ == r.min_ && max_ == r.max_;
+}
+
+template<typename T>
+bool
+libbear::range<T>::
+operator!=(const range<T>& r) const
+{
+  return !operator==(r);
 }
 
 #endif // LIBBEAR_CORE_RANGE_H
