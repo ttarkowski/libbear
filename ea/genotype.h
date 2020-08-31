@@ -26,7 +26,7 @@ namespace libbear {
   public:
     template<typename... Ts> explicit(sizeof...(Ts) == 1) genotype(Ts... ts);
     template<typename... Ts> explicit(sizeof...(Ts) == 1) genotype(std::shared_ptr<Ts>... sps);
-    genotype(const genotype&) = default;
+    genotype(const genotype& g);
     genotype& operator=(const genotype&) = default;
     std::size_t size() const;
     value_type operator[](std::size_t i) const;

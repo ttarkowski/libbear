@@ -1,8 +1,30 @@
+#include <algorithm>
 #include <cstddef>
 #include <functional>
 #include <iostream>
 #include <iterator>
+#include <memory>
 #include <libbear/ea/genotype.h>
+
+namespace {
+
+  template<template<typename> typename C, typename T>
+  C<std::shared_ptr<T>>
+  deep_copy(const C<std::shared_ptr<T>>& c)
+  {
+    C<std::shared_ptr<T>> res{};
+    std::transform(std::begin(c), std::end(c), std::back_inserter(res),
+                   [](std::shared_ptr<T> sp) { return sp->clone(); });
+    
+    return res;
+  }
+  
+}
+
+libbear::genotype::
+genotype(const genotype& g)
+  : chain_{deep_copy(g.chain_)}
+{}
 
 std::size_t
 libbear::genotype::
