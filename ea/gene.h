@@ -39,6 +39,7 @@ namespace libbear {
       
     public:
       virtual ~basic_gene() = default;
+      virtual ptr clone() const = 0;
       template<typename T> T value() const;
       template<typename T> gene<T>& value(T t);
       virtual basic_gene& random_reset() = 0;
@@ -63,10 +64,13 @@ namespace libbear {
   class gene : public detail::basic_gene {
   public:
     using ptr = std::shared_ptr<gene>;
+    using base_ptr = typename detail::basic_gene::ptr;
     
   public:
     explicit gene(T t);
     gene(const gene&) = default;
+    gene& operator=(const gene&) = default;
+    base_ptr clone() const override;
     T value() const;
     gene& value(T t);
     gene& random_reset() override;
@@ -86,9 +90,13 @@ namespace libbear {
   class constrained_gene final : public gene<T> {
   public:
     using ptr = typename std::shared_ptr<constrained_gene<T>>;
+    using base_ptr = typename detail::basic_gene::ptr;
     
   public:
     constrained_gene(T t, range<T> r);
+    constrained_gene(const constrained_gene&) = default;
+    constrained_gene& operator=(const constrained_gene&) = default;
+    base_ptr clone() const override;
     range<T> constraints() const;
     constrained_gene& constraints(const range<T>& r);
     constrained_gene& random_reset() override;
@@ -127,6 +135,14 @@ libbear::gene<T>::
 gene(T t)
   : value_{t}
 {
+}
+
+template<typename T>
+typename libbear::gene<T>::base_ptr
+libbear::gene<T>::
+clone() const
+{
+  return std::make_shared<gene>(*this);
 }
 
 template<typename T>
@@ -183,6 +199,14 @@ constrained_gene(T t, range<T> r)
   }
 }
   
+template<typename T>
+typename libbear::constrained_gene<T>::base_ptr
+libbear::constrained_gene<T>::
+clone() const
+{
+  return std::make_shared<constrained_gene>(*this);
+}
+
 template<typename T>
 libbear::range<T>
 libbear::constrained_gene<T>::
