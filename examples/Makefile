@@ -20,6 +20,12 @@ $(TARGET): $(OBJECTS)
 run:
 	LD_LIBRARY_PATH=../../:$LD_LIBRARY_PATH ./$(TARGET)
 
+check:
+	LD_LIBRARY_PATH=../../:$LD_LIBRARY_PATH \
+	valgrind --leak-check=full --show-leak-kinds=all \
+	--errors-for-leak-kinds=all --run-cxx-freeres=yes \
+	./$(TARGET)
+
 .PHONY: clean
 clean:
 	rm -f *~ */*~ $(TARGET) $(OBJECTS) $(DEPENDENCY)

@@ -13,7 +13,21 @@ fi
 
 pushd $1
 cp ../Makefile .
-make all && make run
+make all
+if ([[ "$?" == "0" ]])
+then
+    echo Compilation successful.
+    make run
+    if ([[ "$?" == "0" ]])
+    then
+        echo Successful program execution.
+    else
+        echo Program has failed.
+        make check
+    fi
+else
+    echo Compilation has failed.
+fi
 make clean && rm -f Makefile
 popd
 
