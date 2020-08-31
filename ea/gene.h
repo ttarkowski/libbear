@@ -196,6 +196,9 @@ libbear::constrained_gene<T>&
 libbear::constrained_gene<T>::
 constraints(const range<T>& r)
 {
+  if (!r.contains(this->value())) {
+    throw std::invalid_argument("constrained_gene: bad range");
+  }
   constraints_ = r;
   return *this;
 }
