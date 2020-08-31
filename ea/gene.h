@@ -90,6 +90,7 @@ namespace libbear {
   public:
     constrained_gene(T t, range<T> r);
     range<T> constraints() const;
+    constrained_gene& constraints(const range<T>& r);
     constrained_gene& random_reset() override;
     
   protected:
@@ -188,6 +189,15 @@ libbear::constrained_gene<T>::
 constraints() const
 {
   return constraints_;
+}
+
+template<typename T>
+libbear::constrained_gene<T>&
+libbear::constrained_gene<T>::
+constraints(const range<T>& r)
+{
+  constraints_ = r;
+  return *this;
 }
 
 template<typename T>
