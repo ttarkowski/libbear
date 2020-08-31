@@ -9,6 +9,8 @@ namespace libbear {
   class range {
   public:
     range(T min, T max);
+    T min() const;
+    T max() const;
     bool contains(T t) const;
     bool operator==(const range<T>& r) const;
     
@@ -30,6 +32,22 @@ range(T min, T max)
   if (min > max) {
     throw std::invalid_argument{"range: min greater than max"};
   }
+}
+
+template<typename T>
+T
+libbear::range<T>::
+min() const
+{
+  return min_;
+}
+
+template<typename T>
+T
+libbear::range<T>::
+max() const
+{
+  return max_;
 }
 
 template<typename T>
