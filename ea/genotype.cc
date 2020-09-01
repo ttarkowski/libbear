@@ -43,9 +43,16 @@ size() const
   return chain_.size();
 }
     
-libbear::genotype::value_type
+libbear::genotype::raw_pointer
 libbear::genotype::
 operator[](std::size_t i) const
+{
+  return chain_[i].get();
+}
+    
+libbear::genotype::value_type&
+libbear::genotype::
+operator[](std::size_t i)
 {
   return chain_[i];
 }
