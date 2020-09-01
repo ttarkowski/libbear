@@ -24,6 +24,7 @@ namespace libbear {
     using const_iterator = typename chain::const_iterator;
     
   public:
+    genotype() = default;
     template<typename... Ts> explicit(sizeof...(Ts) == 1) genotype(Ts... ts);
     template<typename... Ts> explicit(sizeof...(Ts) == 1) genotype(std::shared_ptr<Ts>... sps);
     genotype(const genotype& g);
