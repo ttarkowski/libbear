@@ -26,6 +26,16 @@ genotype(const genotype& g)
   : chain_{deep_copy(g.chain_)}
 {}
 
+libbear::genotype&
+libbear::genotype::
+operator=(const genotype& g)
+{
+  if (&g != this) {
+    chain_ = deep_copy(g.chain_);
+  }
+  return *this;
+}
+
 std::size_t
 libbear::genotype::
 size() const
