@@ -49,8 +49,6 @@ namespace libbear {
       
     protected:
       virtual bool equal(const basic_gene&) const;
-      
-    private:
       virtual void print(std::ostream&) const = 0;
     };
     
@@ -77,10 +75,10 @@ namespace libbear {
 
   protected:
     bool equal(const detail::basic_gene& bg) const override;
+    void print(std::ostream& os) const override;
     
   private:
     using detail::basic_gene::value;
-    void print(std::ostream& os) const override;
 
   private:
     T value_;
@@ -103,6 +101,7 @@ namespace libbear {
     
   protected:
     bool equal(const detail::basic_gene& bg) const override;
+    void print(std::ostream& os) const override;
     
   private:
     range<T> constraints_;
@@ -244,6 +243,15 @@ equal(const detail::basic_gene& bg) const
 {
   const auto cg = static_cast<const constrained_gene&>(bg);
   return gene<T>::equal(cg) && cg.constraints_ == constraints_;
+}
+
+template<typename T>
+void
+libbear::constrained_gene<T>::
+print(std::ostream& os) const
+{
+  gene<T>::print(os);
+  os << " in " << constraints_;
 }
 
 #endif // LIBBEAR_EA_GENE_H

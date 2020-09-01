@@ -1,6 +1,7 @@
 #ifndef LIBBEAR_CORE_RANGE_H
 #define LIBBEAR_CORE_RANGE_H
 
+#include <iostream>
 #include <stdexcept>
 
 namespace libbear {
@@ -17,10 +18,16 @@ namespace libbear {
     bool operator==(const range<T>& r) const;
     bool operator!=(const range<T>& r) const;
     
+    template<typename U>
+    friend std::ostream& operator<<(std::ostream& os, const range<U>& r);
+    
   private:
     T min_;
     T max_;
   };
+
+  template<typename T>
+  std::ostream& operator<<(std::ostream& os, const range<T>& r);
   
 } // namespace libbear
 
@@ -75,6 +82,14 @@ libbear::range<T>::
 operator!=(const range<T>& r) const
 {
   return !operator==(r);
+}
+
+template<typename T>
+std::ostream&
+libbear::operator<<(std::ostream& os, const range<T>& r)
+{
+  os << '[' << r.min() << ", " << r.max() << ']';
+  return os;
 }
 
 #endif // LIBBEAR_CORE_RANGE_H
