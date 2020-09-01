@@ -64,6 +64,20 @@ end() const
   return std::end(chain_);
 }
 
+libbear::genotype::iterator
+libbear::genotype::
+begin()
+{
+  return std::begin(chain_);
+}
+
+libbear::genotype::iterator
+libbear::genotype::
+end()
+{
+  return std::end(chain_);
+}
+
 bool
 libbear::genotype::
 operator==(const genotype& g) const

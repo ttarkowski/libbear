@@ -22,6 +22,7 @@ namespace libbear {
     using chain = std::vector<detail::basic_gene::ptr>;
     using value_type = typename chain::value_type;
     using const_iterator = typename chain::const_iterator;
+    using iterator = typename chain::iterator;
     
   public:
     genotype() = default;
@@ -33,6 +34,8 @@ namespace libbear {
     value_type operator[](std::size_t i) const;
     const_iterator begin() const;
     const_iterator end() const;
+    iterator begin();
+    iterator end();
     bool operator==(const genotype& g) const;
     bool operator!=(const genotype& g) const;
     genotype& random_reset();
