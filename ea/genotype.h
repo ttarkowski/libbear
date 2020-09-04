@@ -27,8 +27,14 @@ namespace libbear {
     
   public:
     genotype() = default;
-    template<typename... Ts> explicit(sizeof...(Ts) == 1) genotype(Ts... ts);
-    template<typename... Ts> explicit(sizeof...(Ts) == 1) genotype(std::shared_ptr<Ts>... sps);
+
+    // Note: genotype ctor was previously conditionally explicit:
+    //   explicit(sizeof...(Ts) == 1)
+    // That solution leads to greedy and unintentional construction of genotype
+    // objects. The genotype ctor should be explicit without any conditions:
+    template<typename... Ts> explicit genotype(Ts... ts);
+    template<typename... Ts> explicit genotype(std::shared_ptr<Ts>... sps);
+    
     genotype(const genotype& g);
     genotype& operator=(const genotype& g);
     std::size_t size() const;
