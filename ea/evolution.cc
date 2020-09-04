@@ -13,7 +13,7 @@ libbear::population
 libbear::generation_creator::
 operator()() const
 {
-  const auto [p0, p1, p2] = populate_;
+  const auto& [p0, p1, p2] = populate_;
   current_generation_ = first_use_
     ? p0(options_.generation_sz)
     : p2(options_.generation_sz,
