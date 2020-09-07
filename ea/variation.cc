@@ -80,7 +80,7 @@ operator()(const genotype& g0, const genotype& g1) const
 {
   population res{};
   for (const auto& g : recombine_(g0, g1)) {
-    res.push_back(mutate_(g)[0]);
+    res.push_back(mutate_(g).at(0));
   }
   assert(res.size() == 1 || res.size() == 2);
   return res;
