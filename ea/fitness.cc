@@ -48,11 +48,10 @@ libbear::selection_probabilities
 libbear::fitness_proportional_selection::
 operator()(const population& p) const
 {
+  const fitnesses fs{ff_(p)};
+  const fitness sum = std::accumulate(std::begin(fs), std::end(fs), fitness{0.});
   selection_probabilities res{};
-  std::transform(std::begin(p), std::end(p), std::back_inserter(res),
-                 [this](const auto& g) { return ff_(g); });
-  const auto sum = std::accumulate(std::begin(res), std::end(res), fitness{0.});
-  std::transform(std::begin(res), std::end(res), std::begin(res),
-                 [sum](auto x) { return x / sum; });
+  std::transform(std::begin(fs), std::end(fs), std::back_inserter(res),
+                 [sum](fitness f) { return f / sum; });
   return res;
 }
