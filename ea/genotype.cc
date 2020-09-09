@@ -150,7 +150,7 @@ operator()(const libbear::genotype& g) const noexcept
   // TODO: Better hash function?
   const std::hash<typename libbear::genotype::chain::value_type> h{};
   std::size_t res{0};
-  for (const auto& x : g.chain_) {
+  for (const auto& x : g) {
     res ^= h(x);
   };
   return res;

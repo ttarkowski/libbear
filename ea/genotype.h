@@ -14,8 +14,6 @@ struct std::hash<libbear::genotype>;
 namespace libbear {
   
   class genotype {
-    friend std::hash<genotype>;
-    
   public:
     using point = std::size_t;
     using crossover_points = std::set<point>;
