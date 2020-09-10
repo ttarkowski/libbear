@@ -9,8 +9,6 @@
 #include <libbear/ea/elements.h>
 #include <libbear/ea/gene.h>
 
-struct std::hash<libbear::genotype>;
-
 namespace libbear {
   
   class genotype {
@@ -30,8 +28,15 @@ namespace libbear {
     //   explicit(sizeof...(Ts) == 1)
     // That solution leads to greedy and unintentional construction of genotype
     // objects. The genotype ctor should be explicit without any conditions:
-    template<typename... Ts> explicit genotype(Ts... ts);
-    template<typename... Ts> explicit genotype(std::shared_ptr<Ts>... sps);
+    template<typename... Ts>
+    explicit genotype(Ts... ts)
+      : chain_{std::make_shared<gene<Ts>>(ts)...}
+    {}
+    
+    template<typename... Ts>
+    explicit genotype(std::shared_ptr<Ts>... sps)
+      : chain_{sps...}
+    {}
     
     genotype(const genotype& g);
     genotype& operator=(const genotype& g);
@@ -61,19 +66,5 @@ template<>
 struct std::hash<libbear::genotype> {
   std::size_t operator()(const libbear::genotype& g) const noexcept;
 };
-
-// IMPLEMENTATION
-
-template<typename... Ts>
-libbear::genotype::
-genotype(Ts... ts)
-  : chain_{std::make_shared<gene<Ts>>(ts)...}
-{}
-
-template<typename... Ts>
-libbear::genotype::
-genotype(std::shared_ptr<Ts>... sps)
-  : chain_{sps...}
-{}
 
 #endif // LIBBEAR_EA_GENOTYPE_H

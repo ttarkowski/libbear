@@ -1,25 +1,37 @@
 #ifndef LIBBEAR_CORE_RANGE_H
 #define LIBBEAR_CORE_RANGE_H
 
+#include <limits>
 #include <iostream>
 #include <stdexcept>
+#include <type_traits>
 
 namespace libbear {
   
   template<typename T>
   class range {
   public:
-    range(T min, T max);
-    range(const range&) = default;
-    range& operator=(const range&) = default;
-    T min() const;
-    T max() const;
-    bool contains(T t) const;
-    bool operator==(const range<T>& r) const;
-    bool operator!=(const range<T>& r) const;
+    range(T min, T max) : min_{min}, max_{max} {
+      if (min > max) {
+        throw std::invalid_argument{"range: min greater than max"};
+      }
+    }
+
+    template<
+      typename U = T,
+      typename = std::enable_if_t<std::numeric_limits<U>::is_specialized>>
+    range()
+      : range{std::numeric_limits<T>::lowest(), std::numeric_limits<T>::max()}
+    {}
     
-    template<typename U>
-    friend std::ostream& operator<<(std::ostream& os, const range<U>& r);
+    range(const range&) = default;
+    range(range&&) = default;
+    range& operator=(const range&) = default;
+    range& operator=(range&&) = default;
+    T min() const { return min_; }
+    T max() const { return max_; }
+    bool contains(T t) const { return t >= min_ && t <= max_; }
+    auto operator<=>(const range<T>& r) const = default;
     
   private:
     T min_;
@@ -27,69 +39,9 @@ namespace libbear {
   };
 
   template<typename T>
-  std::ostream& operator<<(std::ostream& os, const range<T>& r);
+  std::ostream& operator<<(std::ostream& os, const range<T>& r)
+  { return (os << '[' << r.min() << ", " << r.max() << ']'); }
   
 } // namespace libbear
-
-// IMPLEMENTATION
-
-template<typename T>
-libbear::range<T>::
-range(T min, T max)
-  : min_{min}
-  , max_{max}
-{
-  if (min > max) {
-    throw std::invalid_argument{"range: min greater than max"};
-  }
-}
-
-template<typename T>
-T
-libbear::range<T>::
-min() const
-{
-  return min_;
-}
-
-template<typename T>
-T
-libbear::range<T>::
-max() const
-{
-  return max_;
-}
-
-template<typename T>
-bool
-libbear::range<T>::
-contains(T t) const
-{
-  return t >= min_ && t <= max_;
-}
-
-template<typename T>
-bool
-libbear::range<T>::
-operator==(const range<T>& r) const
-{
-  return min_ == r.min_ && max_ == r.max_;
-}
-
-template<typename T>
-bool
-libbear::range<T>::
-operator!=(const range<T>& r) const
-{
-  return !operator==(r);
-}
-
-template<typename T>
-std::ostream&
-libbear::operator<<(std::ostream& os, const range<T>& r)
-{
-  os << '[' << r.min() << ", " << r.max() << ']';
-  return os;
-}
 
 #endif // LIBBEAR_CORE_RANGE_H

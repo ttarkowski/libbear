@@ -40,8 +40,20 @@ namespace libbear {
     public:
       virtual ~basic_gene() = default;
       virtual ptr clone() const = 0;
-      template<typename T> T value() const;
-      template<typename T> gene<T>& value(T t);
+      
+      template<typename T>
+      T value() const
+      {
+        // I can perform downcast, because I have previously limited set of
+        // usable classes. For more details please see note for
+        // basic_gene_restrictions.
+        return static_cast<const gene<T>*>(this)->value();
+      }
+      
+      template<typename T>
+      gene<T>& value(T t)
+      { return static_cast<gene<T>*>(this)->value(t); }
+      
       virtual basic_gene& random_reset() = 0;
       friend std::ostream& operator<<(std::ostream& os, const basic_gene& bg);
       friend bool operator==(const basic_gene& l, const basic_gene& r);
@@ -65,17 +77,33 @@ namespace libbear {
     using base_ptr = typename detail::basic_gene::ptr;
     
   public:
-    explicit gene(T t);
+    explicit gene(T t) : value_{t} {}
     gene(const gene&) = default;
     gene& operator=(const gene&) = default;
-    base_ptr clone() const override;
-    T value() const;
-    gene& value(T t);
-    gene& random_reset() override;
+    base_ptr clone() const override { return std::make_shared<gene>(*this); }
+    T value() const { return value_; }
+    gene& value(T t)
+    {
+      value_ = t;
+      return *this;
+    }
+    
+    gene& random_reset() override
+    {
+      value_ =
+        random_from_uniform_distribution<T>(std::numeric_limits<T>::lowest(),
+                                            std::numeric_limits<T>::max());
+      return *this;
+    }
 
   protected:
-    bool equal(const detail::basic_gene& bg) const override;
-    void print(std::ostream& os) const override;
+    bool equal(const detail::basic_gene& bg) const override
+    {
+      const auto g = static_cast<const gene&>(bg);
+      return detail::basic_gene::equal(g) && g.value_ == value_;
+    }
+    
+    void print(std::ostream& os) const override { os << value_; }
     
   private:
     using detail::basic_gene::value;
@@ -91,167 +119,55 @@ namespace libbear {
     using base_ptr = typename detail::basic_gene::ptr;
     
   public:
-    constrained_gene(T t, range<T> r);
+    constrained_gene(T t, range<T> r) : gene<T>{t}, constraints_{r}
+    {
+      if (!r.contains(t)) {
+        throw
+          std::invalid_argument{"constrained_gene: argument is out of range"};
+      }
+    }
+
     constrained_gene(const constrained_gene&) = default;
     constrained_gene& operator=(const constrained_gene&) = default;
-    base_ptr clone() const override;
-    range<T> constraints() const;
-    constrained_gene& constraints(const range<T>& r);
-    constrained_gene& random_reset() override;
+    
+    base_ptr clone() const override
+    { return std::make_shared<constrained_gene>(*this); }
+    
+    range<T> constraints() const { return constraints_; }
+    
+    constrained_gene& constraints(const range<T>& r)
+    {
+      if (!r.contains(this->value())) {
+        throw std::invalid_argument("constrained_gene: bad range");
+      }
+      constraints_ = r;
+      return *this;
+    }
+    
+    constrained_gene& random_reset() override
+    {
+      this->value(random_from_uniform_distribution<T>(constraints_.min(),
+                                                      constraints_.max()));
+      return *this;
+    }
     
   protected:
-    bool equal(const detail::basic_gene& bg) const override;
-    void print(std::ostream& os) const override;
+    bool equal(const detail::basic_gene& bg) const override
+    {
+      const auto cg = static_cast<const constrained_gene&>(bg);
+      return gene<T>::equal(cg) && cg.constraints_ == constraints_;
+    }
+    
+    void print(std::ostream& os) const override
+    {
+      gene<T>::print(os);
+      os << " in " << constraints_;
+    }
     
   private:
     range<T> constraints_;
   };
   
 } // namespace libbear
-
-// IMPLEMENTATION
-
-template<typename T>
-T
-libbear::detail::basic_gene::
-value() const
-{
-  // I can perform downcast, because I have previously limited set of usable
-  // classes. For more details please see note for basic_gene_restrictions.
-  return static_cast<const gene<T>*>(this)->value();
-}
-
-template<typename T>
-libbear::gene<T>&
-libbear::detail::basic_gene::
-value(T t)
-{
-  return static_cast<gene<T>*>(this)->value(t);
-}
-
-template<typename T>
-libbear::gene<T>::
-gene(T t)
-  : value_{t}
-{
-}
-
-template<typename T>
-typename libbear::gene<T>::base_ptr
-libbear::gene<T>::
-clone() const
-{
-  return std::make_shared<gene>(*this);
-}
-
-template<typename T>
-T
-libbear::gene<T>::
-value() const
-{
-  return value_;
-}
-
-template<typename T>
-libbear::gene<T>&
-libbear::gene<T>::
-value(T t)
-{
-  value_ = t;
-  return *this;
-}
-
-template<typename T>
-libbear::gene<T>&
-libbear::gene<T>::
-random_reset()
-{
-  value_ = random_from_uniform_distribution<T>(std::numeric_limits<T>::lowest(),
-                                               std::numeric_limits<T>::max());
-  return *this;
-}
-  
-template<typename T>
-bool
-libbear::gene<T>::
-equal(const detail::basic_gene& bg) const
-{
-  const auto g = static_cast<const gene&>(bg);
-  return detail::basic_gene::equal(g) && g.value_ == value_;
-}
-
-template<typename T> 
-void
-libbear::gene<T>::
-print(std::ostream& os) const
-{
-  os << value_;
-}
-
-template<typename T>
-libbear::constrained_gene<T>::
-constrained_gene(T t, range<T> r)
-  : gene<T>{t}, constraints_{r}
-{
-  if (!r.contains(t)) {
-    throw std::invalid_argument{"constrained_gene: argument is out of range"};
-  }
-}
-  
-template<typename T>
-typename libbear::constrained_gene<T>::base_ptr
-libbear::constrained_gene<T>::
-clone() const
-{
-  return std::make_shared<constrained_gene>(*this);
-}
-
-template<typename T>
-libbear::range<T>
-libbear::constrained_gene<T>::
-constraints() const
-{
-  return constraints_;
-}
-
-template<typename T>
-libbear::constrained_gene<T>&
-libbear::constrained_gene<T>::
-constraints(const range<T>& r)
-{
-  if (!r.contains(this->value())) {
-    throw std::invalid_argument("constrained_gene: bad range");
-  }
-  constraints_ = r;
-  return *this;
-}
-
-template<typename T>
-libbear::constrained_gene<T>&
-libbear::constrained_gene<T>::
-random_reset()
-{
-  this->value(random_from_uniform_distribution<T>(constraints_.min(),
-                                                  constraints_.max()));
-  return *this;
-}
-
-template<typename T>
-bool
-libbear::constrained_gene<T>::
-equal(const detail::basic_gene& bg) const
-{
-  const auto cg = static_cast<const constrained_gene&>(bg);
-  return gene<T>::equal(cg) && cg.constraints_ == constraints_;
-}
-
-template<typename T>
-void
-libbear::constrained_gene<T>::
-print(std::ostream& os) const
-{
-  gene<T>::print(os);
-  os << " in " << constraints_;
-}
 
 #endif // LIBBEAR_EA_GENE_H
