@@ -61,7 +61,7 @@ namespace libbear {
       
     protected:
       virtual bool equal(const basic_gene&) const;
-      virtual void print(std::ostream&) const = 0;
+      virtual std::ostream& print(std::ostream&) const = 0;
     };
     
     std::ostream& operator<<(std::ostream&, const basic_gene&);
@@ -103,7 +103,8 @@ namespace libbear {
       return detail::basic_gene::equal(g) && g.value_ == value_;
     }
     
-    void print(std::ostream& os) const override { os << value_; }
+    std::ostream& print(std::ostream& os) const override
+    { return (os << value_); }
     
   private:
     using detail::basic_gene::value;
@@ -158,11 +159,8 @@ namespace libbear {
       return gene<T>::equal(cg) && cg.constraints_ == constraints_;
     }
     
-    void print(std::ostream& os) const override
-    {
-      gene<T>::print(os);
-      os << " in " << constraints_;
-    }
+    std::ostream& print(std::ostream& os) const override
+    { return (gene<T>::print(os) << " in " << constraints_); }
     
   private:
     range<T> constraints_;
