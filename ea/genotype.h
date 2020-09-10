@@ -14,7 +14,7 @@
 
 namespace libbear {
 
-  template<typename T> class constrained_gene;
+  template<typename T> class gene;
 
   namespace detail {
 
@@ -27,7 +27,7 @@ namespace libbear {
       // below are allowed to have them. (This is workaround to the problem of
       // restricting inheritance from basic_gene.)
       template<typename T> friend class libbear::detail::typed_gene;
-      template<typename T> friend class libbear::constrained_gene;
+      template<typename T> friend class libbear::gene;
 
     private:
       basic_gene_restrictions() = default;
@@ -118,37 +118,37 @@ namespace libbear {
   }
 
   template<typename T>
-  class constrained_gene final : public detail::typed_gene<T> {
+  class gene final : public detail::typed_gene<T> {
   public:
-    using ptr = typename std::shared_ptr<constrained_gene<T>>;
+    using ptr = typename std::shared_ptr<gene<T>>;
     using base_ptr = typename detail::basic_gene::ptr;
 
   public:
-    constrained_gene(T t, range<T> r)
+    gene(T t, range<T> r)
       : detail::typed_gene<T>{t}, constraints_{r} {
       if (!r.contains(t)) {
         throw
-          std::invalid_argument{"constrained_gene: argument is out of range"};
+          std::invalid_argument{"gene: argument is out of range"};
       }
     }
 
-    constrained_gene(const constrained_gene&) = default;
-    constrained_gene& operator=(const constrained_gene&) = default;
+    gene(const gene&) = default;
+    gene& operator=(const gene&) = default;
 
     base_ptr clone() const override
-    { return std::make_shared<constrained_gene>(*this); }
+    { return std::make_shared<gene>(*this); }
 
     range<T> constraints() const { return constraints_; }
 
-    constrained_gene& constraints(const range<T>& r) {
+    gene& constraints(const range<T>& r) {
       if (!r.contains(this->value())) {
-        throw std::invalid_argument("constrained_gene: bad range");
+        throw std::invalid_argument("gene: bad range");
       }
       constraints_ = r;
       return *this;
     }
 
-    constrained_gene& random_reset() override {
+    gene& random_reset() override {
       this->value(random_from_uniform_distribution<T>(constraints_.min(),
                                                       constraints_.max()));
       return *this;
@@ -156,7 +156,7 @@ namespace libbear {
 
   protected:
     bool equal(const detail::basic_gene& bg) const override {
-      const auto cg = static_cast<const constrained_gene&>(bg);
+      const auto cg = static_cast<const gene&>(bg);
       return detail::typed_gene<T>::equal(cg) && cg.constraints_ == constraints_;
     }
 
