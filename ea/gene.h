@@ -62,9 +62,6 @@ namespace libbear {
       friend bool operator==(const basic_gene& l, const basic_gene& r)
       { return typeid(l) == typeid(r) && l.equal(r); }
 
-      friend bool operator!=(const basic_gene& l, const basic_gene& r)
-      { return !operator==(l, r); }
-      
     protected:
       virtual bool equal(const basic_gene&) const { return true; }
       virtual std::ostream& print(std::ostream&) const = 0;
@@ -72,7 +69,6 @@ namespace libbear {
     
     std::ostream& operator<<(std::ostream&, const basic_gene&);
     bool operator==(const basic_gene&, const basic_gene&);
-    bool operator!=(const basic_gene&, const basic_gene&);
   
   }
 
