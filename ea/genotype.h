@@ -172,7 +172,6 @@ namespace libbear {
     using point = std::size_t;
     using crossover_points = std::set<point>;
     using chain = std::vector<detail::basic_gene::ptr>;
-    using value_type = typename chain::value_type;
     using const_iterator = typename chain::const_iterator;
     using iterator = typename chain::iterator;
     using raw_pointer = detail::basic_gene*;
@@ -198,9 +197,7 @@ namespace libbear {
     genotype& operator=(const genotype& g);
     std::size_t size() const { return chain_.size(); }
     raw_pointer operator[](std::size_t i) const { return chain_[i].get(); }
-    value_type& operator[](std::size_t i) { return chain_[i]; }
     raw_pointer at(std::size_t i) const { return chain_.at(i).get(); }
-    value_type& at(std::size_t i) { return chain_.at(i); }
     const_iterator begin() const { return chain_.begin(); }
     const_iterator end() const { return chain_.end(); }
     iterator begin() { return chain_.begin(); }
