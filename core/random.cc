@@ -9,9 +9,3 @@ random_engine()
   return engine;
 }
 
-bool
-libbear::
-success(probability success_probability)
-{
-  return std::bernoulli_distribution{ success_probability }(random_engine());
-}

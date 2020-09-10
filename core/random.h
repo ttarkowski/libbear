@@ -12,7 +12,9 @@ namespace libbear {
   using probability = double;
 
   std::mt19937& random_engine();
-  bool success(probability success_probability);
+
+  inline bool success(probability success_probability)
+  { return std::bernoulli_distribution{ success_probability }(random_engine()); }
 
   template<typename T>
   T random_from_normal_distribution(T mean, T standard_deviation)
