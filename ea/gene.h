@@ -55,12 +55,18 @@ namespace libbear {
       { return static_cast<gene<T>*>(this)->value(t); }
       
       virtual basic_gene& random_reset() = 0;
-      friend std::ostream& operator<<(std::ostream& os, const basic_gene& bg);
-      friend bool operator==(const basic_gene& l, const basic_gene& r);
-      friend bool operator!=(const basic_gene& l, const basic_gene& r);
+
+      friend std::ostream& operator<<(std::ostream& os, const basic_gene& bg)
+      { return bg.print(os); }
+
+      friend bool operator==(const basic_gene& l, const basic_gene& r)
+      { return typeid(l) == typeid(r) && l.equal(r); }
+
+      friend bool operator!=(const basic_gene& l, const basic_gene& r)
+      { return !operator==(l, r); }
       
     protected:
-      virtual bool equal(const basic_gene&) const;
+      virtual bool equal(const basic_gene&) const { return true; }
       virtual std::ostream& print(std::ostream&) const = 0;
     };
     
