@@ -114,13 +114,6 @@ operator==(const genotype& g) const
   return true;    
 }
 
-bool
-libbear::genotype::
-operator!=(const genotype& g) const
-{
-  return !operator==(g);
-}
-
 libbear::genotype&
 libbear::genotype::
 random_reset()

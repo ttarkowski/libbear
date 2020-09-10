@@ -50,7 +50,6 @@ namespace libbear {
     iterator begin();
     iterator end();
     bool operator==(const genotype& g) const;
-    bool operator!=(const genotype& g) const;
     genotype& random_reset();
     friend std::ostream& operator<<(std::ostream& os, const genotype& g);
     
