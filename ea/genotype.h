@@ -45,8 +45,7 @@ namespace libbear {
       virtual ptr clone() const = 0;
 
       template<typename T>
-      T value() const
-      {
+      T value() const {
         // I can perform downcast, because I have previously limited set of
         // usable classes. For more details please see note for
         // basic_gene_restrictions.
@@ -87,14 +86,13 @@ namespace libbear {
     gene& operator=(const gene&) = default;
     base_ptr clone() const override { return std::make_shared<gene>(*this); }
     T value() const { return value_; }
-    gene& value(T t)
-    {
+
+    gene& value(T t) {
       value_ = t;
       return *this;
     }
 
-    gene& random_reset() override
-    {
+    gene& random_reset() override {
       value_ =
         random_from_uniform_distribution<T>(std::numeric_limits<T>::lowest(),
                                             std::numeric_limits<T>::max());
@@ -102,8 +100,7 @@ namespace libbear {
     }
 
   protected:
-    bool equal(const detail::basic_gene& bg) const override
-    {
+    bool equal(const detail::basic_gene& bg) const override {
       const auto g = static_cast<const gene&>(bg);
       return detail::basic_gene::equal(g) && g.value_ == value_;
     }
@@ -125,8 +122,7 @@ namespace libbear {
     using base_ptr = typename detail::basic_gene::ptr;
 
   public:
-    constrained_gene(T t, range<T> r) : gene<T>{t}, constraints_{r}
-    {
+    constrained_gene(T t, range<T> r) : gene<T>{t}, constraints_{r} {
       if (!r.contains(t)) {
         throw
           std::invalid_argument{"constrained_gene: argument is out of range"};
@@ -141,8 +137,7 @@ namespace libbear {
 
     range<T> constraints() const { return constraints_; }
 
-    constrained_gene& constraints(const range<T>& r)
-    {
+    constrained_gene& constraints(const range<T>& r) {
       if (!r.contains(this->value())) {
         throw std::invalid_argument("constrained_gene: bad range");
       }
@@ -150,16 +145,14 @@ namespace libbear {
       return *this;
     }
 
-    constrained_gene& random_reset() override
-    {
+    constrained_gene& random_reset() override {
       this->value(random_from_uniform_distribution<T>(constraints_.min(),
                                                       constraints_.max()));
       return *this;
     }
 
   protected:
-    bool equal(const detail::basic_gene& bg) const override
-    {
+    bool equal(const detail::basic_gene& bg) const override {
       const auto cg = static_cast<const constrained_gene&>(bg);
       return gene<T>::equal(cg) && cg.constraints_ == constraints_;
     }

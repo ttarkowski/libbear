@@ -11,8 +11,7 @@ generation_creator(const populate_fns& p, const options& o)
   
 libbear::population
 libbear::generation_creator::
-operator()() const
-{
+operator()() const {
   const auto& [p0, p1, p2] = populate_;
   current_generation_ = first_use_
     ? p0(options_.generation_sz)
@@ -32,8 +31,7 @@ evolution(const generation_creator& gc, const termination_condition& tc)
   
 libbear::generations
 libbear::evolution::
-operator()() const
-{
+operator()() const {
   generations res{};
   for (std::size_t i = 0; !terminate_(i++, res);) {
     res.push_back(create_generation_());

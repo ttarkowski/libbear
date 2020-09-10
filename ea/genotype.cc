@@ -10,8 +10,7 @@ namespace {
 
   template<template<typename> typename C, typename T>
   C<std::shared_ptr<T>>
-  deep_copy(const C<std::shared_ptr<T>>& c)
-  {
+  deep_copy(const C<std::shared_ptr<T>>& c) {
     C<std::shared_ptr<T>> res{};
     std::transform(std::begin(c), std::end(c), std::back_inserter(res),
                    [](std::shared_ptr<T> sp) { return sp->clone(); });
@@ -28,8 +27,7 @@ genotype(const genotype& g)
 
 libbear::genotype&
 libbear::genotype::
-operator=(const genotype& g)
-{
+operator=(const genotype& g) {
   if (&g != this) {
     chain_ = deep_copy(g.chain_);
   }
@@ -38,8 +36,7 @@ operator=(const genotype& g)
 
 bool
 libbear::genotype::
-operator==(const genotype& g) const
-{
+operator==(const genotype& g) const {
   if (size() != g.size()) {
     return false;
   }
@@ -53,8 +50,7 @@ operator==(const genotype& g) const
 
 libbear::genotype&
 libbear::genotype::
-random_reset()
-{
+random_reset() {
   for (auto& x : *this) {
     x->random_reset();
   }
@@ -63,8 +59,7 @@ random_reset()
 
 std::ostream&
 libbear::
-operator<<(std::ostream& os, const genotype& g)
-{
+operator<<(std::ostream& os, const genotype& g) {
   os << "[ ";
   for (const auto& x : g.chain_) {
     os << *x << ' ';
@@ -75,8 +70,7 @@ operator<<(std::ostream& os, const genotype& g)
 
 std::size_t
 std::hash<libbear::genotype>::
-operator()(const libbear::genotype& g) const noexcept
-{
+operator()(const libbear::genotype& g) const noexcept {
   // TODO: Better hash function?
   const std::hash<typename libbear::genotype::chain::value_type> h{};
   std::size_t res{0};

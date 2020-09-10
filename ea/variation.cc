@@ -5,15 +5,13 @@
 
 libbear::population
 libbear::
-unary_identity(const genotype& g)
-{
+unary_identity(const genotype& g) {
   return population{g};
 }
 
 libbear::population
 libbear::
-binary_identity(const genotype& g0, const genotype& g1)
-{
+binary_identity(const genotype& g0, const genotype& g1) {
   return population{g0, g1};
 }
 
@@ -26,8 +24,7 @@ stochastic_mutation(const mutation_fn& m, probability p)
 
 libbear::population
 libbear::stochastic_mutation::
-operator()(const genotype& g) const
-{
+operator()(const genotype& g) const {
   return success(mutation_probability_)
     ? mutate_(g)
     : population{g};
@@ -41,8 +38,7 @@ stochastic_recombination(const recombination_fn& r, probability p)
 
 libbear::population
 libbear::stochastic_recombination::
-operator()(const genotype& g0, const genotype& g1) const
-{
+operator()(const genotype& g0, const genotype& g1) const {
   const auto res_t = recombine_(g0, g1);
   return success(recombination_probability_)
     ? res_t
@@ -76,8 +72,7 @@ variation(const recombination_fn& r)
 
 libbear::population
 libbear::variation::
-operator()(const genotype& g0, const genotype& g1) const
-{
+operator()(const genotype& g0, const genotype& g1) const {
   population res{};
   for (const auto& g : recombine_(g0, g1)) {
     res.push_back(mutate_(g).at(0));
@@ -88,8 +83,7 @@ operator()(const genotype& g0, const genotype& g1) const
 
 libbear::population
 libbear::variation::
-operator()(const population& p) const
-{
+operator()(const population& p) const {
   if (p.size() % 2) {
     throw std::invalid_argument{"variation: wrong population size"};
   }
@@ -102,3 +96,4 @@ operator()(const population& p) const
   assert(res.size() == p.size() || res.size() == 2 * p.size());
   return res;
 }
+

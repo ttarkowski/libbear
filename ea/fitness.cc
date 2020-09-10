@@ -14,8 +14,7 @@ fitness_function(const function& f)
 // TODO: Consider memoization.
 libbear::fitness
 libbear::fitness_function::
-operator()(const genotype& g) const
-{
+operator()(const genotype& g) const {
   auto it{ fitness_values_->find(g) };
   return it != fitness_values_->end()
     ? it->second
@@ -24,8 +23,7 @@ operator()(const genotype& g) const
   
 libbear::fitnesses
 libbear::fitness_function::
-operator()(const population& p) const
-{
+operator()(const population& p) const {
   fitnesses res{};
   std::transform(std::begin(p), std::end(p), std::back_inserter(res),
                  [this](const genotype& g) { return operator()(g); });
@@ -34,8 +32,7 @@ operator()(const population& p) const
 
 std::size_t
 libbear::fitness_function::
-size() const
-{
+size() const {
   return fitness_values_->size();
 }
 
@@ -46,8 +43,7 @@ fitness_proportional_selection(const fitness_function& ff)
 
 libbear::selection_probabilities
 libbear::fitness_proportional_selection::
-operator()(const population& p) const
-{
+operator()(const population& p) const {
   const fitnesses fs{ff_(p)};
   const fitness sum = std::accumulate(std::begin(fs), std::end(fs), fitness{0.});
   selection_probabilities res{};
