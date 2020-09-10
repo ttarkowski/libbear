@@ -124,7 +124,7 @@ namespace libbear {
     using base_ptr = typename detail::basic_gene::ptr;
 
   public:
-    gene(T t, range<T> r)
+    gene(T t, const range<T>& r)
       : detail::typed_gene<T>{t}, constraints_{r} {
       if (!r.contains(t)) {
         throw
