@@ -3,12 +3,6 @@
 #include <libbear/ea/evolution.h>
 #include <libbear/ea/genotype.h>
 
-libbear::generation_creator::
-generation_creator(const populate_fns& p, const options& o)
-  : populate_{p}
-  , options_{o}
-{}
-  
 libbear::population
 libbear::generation_creator::
 operator()() const {
@@ -22,12 +16,6 @@ operator()() const {
   first_use_ = false;
   return current_generation_;
 }
-  
-libbear::evolution::
-evolution(const generation_creator& gc, const termination_condition& tc)
-  : create_generation_{gc}
-  , terminate_{tc}
-{}
   
 libbear::generations
 libbear::evolution::

@@ -6,6 +6,7 @@
 #include <map>
 #include <memory>
 #include <libbear/ea/elements.h>
+#include <libbear/ea/genotype.h>
 
 namespace libbear {
 
@@ -15,12 +16,15 @@ namespace libbear {
     using function = std::function<fitness(const genotype&)>;
   
   public:
-    explicit fitness_function(const function& f);
+    explicit fitness_function(const function& f)
+      : function_{f}
+    {}
+
     fitness_function(const fitness_function&) = default;
     fitness_function& operator=(const fitness_function&) = default;
     fitness operator()(const genotype& g) const;
     fitnesses operator()(const population& p) const;
-    std::size_t size() const;
+    std::size_t size() const { return fitness_values_->size(); }
     
   private:
     function function_;
@@ -30,7 +34,10 @@ namespace libbear {
   
   class fitness_proportional_selection {
   public:
-    explicit fitness_proportional_selection(const fitness_function& ff);
+    explicit fitness_proportional_selection(const fitness_function& ff)
+      : ff_{ff}
+    {}
+
     selection_probabilities operator()(const population& p) const;
     
   private:

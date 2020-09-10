@@ -6,11 +6,6 @@
 #include <libbear/ea/fitness.h>
 #include <libbear/ea/genotype.h>
 
-libbear::fitness_function::
-fitness_function(const function& f)
-  : function_{f}
-{}
-
 // TODO: Consider memoization.
 libbear::fitness
 libbear::fitness_function::
@@ -29,17 +24,6 @@ operator()(const population& p) const {
                  [this](const genotype& g) { return operator()(g); });
   return res;
 }
-
-std::size_t
-libbear::fitness_function::
-size() const {
-  return fitness_values_->size();
-}
-
-libbear::fitness_proportional_selection::
-fitness_proportional_selection(const fitness_function& ff)
-  : ff_{ff}
-{}
 
 libbear::selection_probabilities
 libbear::fitness_proportional_selection::

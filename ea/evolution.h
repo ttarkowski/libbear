@@ -15,7 +15,10 @@ namespace libbear {
       const std::size_t parents_sz;
     };
     
-    generation_creator(const populate_fns& p, const options& o);
+    generation_creator(const populate_fns& p, const options& o)
+      : populate_{p}, options_{o}
+    {}
+
     population operator()() const;
     
   private:
@@ -27,7 +30,10 @@ namespace libbear {
   
   class evolution {
   public:
-    evolution(const generation_creator& gc, const termination_condition& tc);
+    evolution(const generation_creator& gc, const termination_condition& tc)
+      : create_generation_{gc}, terminate_{tc}
+    {}
+
     generations operator()() const;
     
   private:
