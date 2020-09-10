@@ -14,19 +14,19 @@
 
 namespace libbear {
 
-  template<typename T> class typed_gene;
   template<typename T> class constrained_gene;
 
   namespace detail {
 
     class basic_gene;
+    template<typename T> class typed_gene;
 
     class basic_gene_restrictions {
       friend class libbear::detail::basic_gene;
       // Classes derived from basic_gene have deleted ctors. Only classes listed
       // below are allowed to have them. (This is workaround to the problem of
       // restricting inheritance from basic_gene.)
-      template<typename T> friend class libbear::typed_gene;
+      template<typename T> friend class libbear::detail::typed_gene;
       template<typename T> friend class libbear::constrained_gene;
 
     private:
@@ -72,60 +72,60 @@ namespace libbear {
     std::ostream& operator<<(std::ostream&, const basic_gene&);
     bool operator==(const basic_gene&, const basic_gene&);
 
+    template<typename T>
+    class typed_gene : public basic_gene {
+    public:
+      using ptr = std::shared_ptr<typed_gene>;
+      using base_ptr = typename basic_gene::ptr;
+
+    public:
+      explicit typed_gene(T t) : value_{t} {}
+      typed_gene(const typed_gene&) = default;
+      typed_gene& operator=(const typed_gene&) = default;
+
+      base_ptr clone() const override
+      { return std::make_shared<typed_gene>(*this); }
+
+      T value() const { return value_; }
+
+      typed_gene& value(T t) {
+        value_ = t;
+        return *this;
+      }
+
+      typed_gene& random_reset() override {
+        value_ =
+          random_from_uniform_distribution<T>(std::numeric_limits<T>::lowest(),
+                                              std::numeric_limits<T>::max());
+        return *this;
+      }
+
+    protected:
+      bool equal(const basic_gene& bg) const override {
+        const auto g = static_cast<const typed_gene&>(bg);
+        return basic_gene::equal(g) && g.value_ == value_;
+      }
+
+      std::ostream& print(std::ostream& os) const override
+      { return (os << value_); }
+
+    private:
+      using basic_gene::value;
+
+    private:
+      T value_;
+    };
   }
 
   template<typename T>
-  class typed_gene : public detail::basic_gene {
-  public:
-    using ptr = std::shared_ptr<typed_gene>;
-    using base_ptr = typename detail::basic_gene::ptr;
-
-  public:
-    explicit typed_gene(T t) : value_{t} {}
-    typed_gene(const typed_gene&) = default;
-    typed_gene& operator=(const typed_gene&) = default;
-
-    base_ptr clone() const override
-    { return std::make_shared<typed_gene>(*this); }
-
-    T value() const { return value_; }
-
-    typed_gene& value(T t) {
-      value_ = t;
-      return *this;
-    }
-
-    typed_gene& random_reset() override {
-      value_ =
-        random_from_uniform_distribution<T>(std::numeric_limits<T>::lowest(),
-                                            std::numeric_limits<T>::max());
-      return *this;
-    }
-
-  protected:
-    bool equal(const detail::basic_gene& bg) const override {
-      const auto g = static_cast<const typed_gene&>(bg);
-      return detail::basic_gene::equal(g) && g.value_ == value_;
-    }
-
-    std::ostream& print(std::ostream& os) const override
-    { return (os << value_); }
-
-  private:
-    using detail::basic_gene::value;
-
-  private:
-    T value_;
-  };
-
-  template<typename T>
-  class constrained_gene final : public typed_gene<T> {
+  class constrained_gene final : public detail::typed_gene<T> {
   public:
     using ptr = typename std::shared_ptr<constrained_gene<T>>;
     using base_ptr = typename detail::basic_gene::ptr;
 
   public:
-    constrained_gene(T t, range<T> r) : typed_gene<T>{t}, constraints_{r} {
+    constrained_gene(T t, range<T> r)
+      : detail::typed_gene<T>{t}, constraints_{r} {
       if (!r.contains(t)) {
         throw
           std::invalid_argument{"constrained_gene: argument is out of range"};
@@ -157,11 +157,11 @@ namespace libbear {
   protected:
     bool equal(const detail::basic_gene& bg) const override {
       const auto cg = static_cast<const constrained_gene&>(bg);
-      return typed_gene<T>::equal(cg) && cg.constraints_ == constraints_;
+      return detail::typed_gene<T>::equal(cg) && cg.constraints_ == constraints_;
     }
 
     std::ostream& print(std::ostream& os) const override
-    { return (typed_gene<T>::print(os) << " in " << constraints_); }
+    { return (detail::typed_gene<T>::print(os) << " in " << constraints_); }
 
   private:
     range<T> constraints_;
@@ -186,7 +186,7 @@ namespace libbear {
     // objects. The genotype ctor should be explicit without any conditions:
     template<typename... Ts>
     explicit genotype(Ts... ts)
-      : chain_{std::make_shared<typed_gene<Ts>>(ts)...}
+      : chain_{std::make_shared<detail::typed_gene<Ts>>(ts)...}
     {}
     
     template<typename... Ts>
