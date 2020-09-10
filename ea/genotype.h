@@ -132,6 +132,7 @@ namespace libbear {
       }
     }
 
+    gene(T t, T min, T max) : gene{t, range<T>{min, max}} {}
     gene(const gene&) = default;
     gene& operator=(const gene&) = default;
 
@@ -179,20 +180,11 @@ namespace libbear {
   public:
     genotype() = default;
 
-    // Note: genotype ctor was previously conditionally explicit:
-    //   explicit(sizeof...(Ts) == 1)
-    // That solution leads to greedy and unintentional construction of genotype
-    // objects. The genotype ctor should be explicit without any conditions:
     template<typename... Ts>
-    explicit genotype(Ts... ts)
-      : chain_{std::make_shared<detail::typed_gene<Ts>>(ts)...}
+    explicit(sizeof...(Ts) == 1) genotype(const gene<Ts>&... gs)
+      : chain_{std::make_shared<gene<Ts>>(gs)...}
     {}
-    
-    template<typename... Ts>
-    explicit genotype(std::shared_ptr<Ts>... sps)
-      : chain_{sps...}
-    {}
-    
+
     genotype(const genotype& g);
     genotype& operator=(const genotype& g);
     std::size_t size() const { return chain_.size(); }
