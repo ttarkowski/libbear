@@ -1,8 +1,8 @@
 #include <algorithm>
 #include <cstddef>
 #include <functional>
-#include <iostream>
 #include <iterator>
+#include <iostream>
 #include <memory>
 #include <libbear/ea/genotype.h>
 
@@ -34,69 +34,6 @@ operator=(const genotype& g)
     chain_ = deep_copy(g.chain_);
   }
   return *this;
-}
-
-std::size_t
-libbear::genotype::
-size() const
-{
-  return chain_.size();
-}
-    
-libbear::genotype::raw_pointer
-libbear::genotype::
-operator[](std::size_t i) const
-{
-  return chain_[i].get();
-}
-    
-libbear::genotype::value_type&
-libbear::genotype::
-operator[](std::size_t i)
-{
-  return chain_[i];
-}
-    
-libbear::genotype::raw_pointer
-libbear::genotype::
-at(std::size_t i) const
-{
-  return chain_.at(i).get();
-}
-    
-libbear::genotype::value_type&
-libbear::genotype::
-at(std::size_t i)
-{
-  return chain_.at(i);
-}
-    
-libbear::genotype::const_iterator
-libbear::genotype::
-begin() const
-{
-  return std::begin(chain_);
-}
-
-libbear::genotype::const_iterator
-libbear::genotype::
-end() const
-{
-  return std::end(chain_);
-}
-
-libbear::genotype::iterator
-libbear::genotype::
-begin()
-{
-  return std::begin(chain_);
-}
-
-libbear::genotype::iterator
-libbear::genotype::
-end()
-{
-  return std::end(chain_);
 }
 
 bool
@@ -148,3 +85,4 @@ operator()(const libbear::genotype& g) const noexcept
   };
   return res;
 }
+

@@ -40,15 +40,15 @@ namespace libbear {
     
     genotype(const genotype& g);
     genotype& operator=(const genotype& g);
-    std::size_t size() const;
-    raw_pointer operator[](std::size_t i) const;
-    value_type& operator[](std::size_t i);
-    raw_pointer at(std::size_t i) const;
-    value_type& at(std::size_t i);
-    const_iterator begin() const;
-    const_iterator end() const;
-    iterator begin();
-    iterator end();
+    std::size_t size() const { return chain_.size(); }
+    raw_pointer operator[](std::size_t i) const { return chain_[i].get(); }
+    value_type& operator[](std::size_t i) { return chain_[i]; }
+    raw_pointer at(std::size_t i) const { return chain_.at(i).get(); }
+    value_type& at(std::size_t i) { return chain_.at(i); }
+    const_iterator begin() const { return chain_.begin(); }
+    const_iterator end() const { return chain_.end(); }
+    iterator begin() { return chain_.begin(); }
+    iterator end() { return chain_.end(); }
     bool operator==(const genotype& g) const;
     genotype& random_reset();
     friend std::ostream& operator<<(std::ostream& os, const genotype& g);
