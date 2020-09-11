@@ -1,6 +1,7 @@
 #ifndef LIBBEAR_EA_GENOTYPE_H
 #define LIBBEAR_EA_GENOTYPE_H
 
+#include <compare>
 #include <cstddef>
 #include <iosfwd>
 #include <limits>
@@ -64,13 +65,27 @@ namespace libbear {
       friend bool operator==(const basic_gene& l, const basic_gene& r)
       { return typeid(l) == typeid(r) && l.equal(r); }
 
+      friend std::partial_ordering operator<=>(const basic_gene& l,
+                                               const basic_gene& r) {
+        if (typeid(l) != typeid(r)) {
+          throw std::runtime_error{"operator<=>: different dynamic types"};
+        }
+        return l.spaceship(r);
+      }
+
     protected:
       virtual bool equal(const basic_gene&) const { return true; }
       virtual std::ostream& print(std::ostream&) const = 0;
+
+    private:
+      virtual std::partial_ordering spaceship(const basic_gene&) const {
+        return std::partial_ordering::equivalent;
+      }
     };
 
     std::ostream& operator<<(std::ostream&, const basic_gene&);
     bool operator==(const basic_gene&, const basic_gene&);
+    std::partial_ordering operator<=>(const basic_gene&, const basic_gene&);
 
     template<typename T>
     class typed_gene : public basic_gene {
@@ -103,16 +118,21 @@ namespace libbear {
       }
 
     protected:
-      bool equal(const basic_gene& bg) const override {
-        const auto g = static_cast<const typed_gene&>(bg);
-        return basic_gene::equal(g) && g.value_ == value_;
-      }
-
       std::ostream& print(std::ostream& os) const override
       { return (os << value_); }
 
     private:
       using basic_gene::value;
+
+      bool equal(const basic_gene& bg) const override {
+        const auto g = static_cast<const typed_gene&>(bg);
+        return basic_gene::equal(g) && g.value_ == value_;
+      }
+
+      std::partial_ordering spaceship(const basic_gene& bg) const override {
+        const auto g = static_cast<const typed_gene&>(bg);
+        return g.value_ <=> value_;
+      }
 
     private:
       T value_;
@@ -129,14 +149,15 @@ namespace libbear {
     gene(T t, const range<T>& r)
       : detail::typed_gene<T>{t}, constraints_{r} {
       if (!r.contains(t)) {
-        throw
-          std::invalid_argument{"gene: argument is out of range"};
+        throw std::invalid_argument{"gene: value is out of range"};
       }
     }
 
     gene(T t, T min, T max) : gene{t, range<T>{min, max}} {}
     gene(const gene&) = default;
+    gene(gene&&) = default;
     gene& operator=(const gene&) = default;
+    gene& operator=(gene&&) = default;
 
     base_ptr clone() const override
     { return std::make_shared<gene>(*this); }
@@ -172,11 +193,6 @@ namespace libbear {
     }
 
   protected:
-    bool equal(const detail::basic_gene& bg) const override {
-      const auto cg = static_cast<const gene&>(bg);
-      return detail::typed_gene<T>::equal(cg) && cg.constraints_ == constraints_;
-    }
-
     std::ostream& print(std::ostream& os) const override
     { return (detail::typed_gene<T>::print(os) << " in " << constraints_); }
 
