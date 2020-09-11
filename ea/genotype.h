@@ -88,7 +88,7 @@ namespace libbear {
 
       T value() const { return value_; }
 
-      typed_gene& value(T t) {
+      virtual typed_gene& value(T t) {
         value_ = t;
         return *this;
       }
@@ -146,6 +146,20 @@ namespace libbear {
         throw std::invalid_argument("gene: bad range");
       }
       constraints_ = r;
+      return *this;
+    }
+
+    // I can't use:
+    //   using detail::typed_gene<T>::value;
+    // because it conflicts with hidden basic_gene::value. Thus I redefine
+    // non-virtual to get around the hiding rule:
+    T value() const { return detail::typed_gene<T>::value(); }
+
+    gene& value(T t) override {
+      if (!constraints_.contains(t)) {
+        throw std::invalid_argument{"gene: bad value"};
+      }
+      detail::typed_gene<T>::value(t);
       return *this;
     }
 
