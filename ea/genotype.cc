@@ -51,8 +51,8 @@ operator==(const genotype& g) const {
 libbear::genotype&
 libbear::genotype::
 random_reset() {
-  for (auto& x : *this) {
-    x->random_reset();
+  for (auto it = this->begin(); it != this->end(); ++it) {
+    (**it).random_reset();
   }
   return *this;
 }
@@ -61,8 +61,8 @@ std::ostream&
 libbear::
 operator<<(std::ostream& os, const genotype& g) {
   os << "[ ";
-  for (const auto& x : g.chain_) {
-    os << *x << ' ';
+  for (auto it = g.begin(); it != g.end(); ++it) {
+    os << **it << ' ';
   }
   os << ']';
   return os;
