@@ -3,7 +3,8 @@
 
 #include <compare>
 #include <cstddef>
-#include <iosfwd>
+#include <iostream>
+#include <iterator>
 #include <limits>
 #include <memory>
 #include <set>
@@ -39,7 +40,7 @@ namespace libbear {
 
     class basic_gene : virtual basic_gene_restrictions {
     public:
-      using ptr = std::shared_ptr<basic_gene>;
+      using ptr = std::unique_ptr<basic_gene>;
 
     public:
       virtual ~basic_gene() = default;
@@ -90,7 +91,7 @@ namespace libbear {
     template<typename T>
     class typed_gene : public basic_gene {
     public:
-      using ptr = std::shared_ptr<typed_gene>;
+      using ptr = std::unique_ptr<typed_gene>;
       using base_ptr = typename basic_gene::ptr;
 
     public:
@@ -101,7 +102,7 @@ namespace libbear {
       typed_gene& operator=(typed_gene&&) = default;
 
       base_ptr clone() const override
-      { return std::make_shared<typed_gene>(*this); }
+      { return std::make_unique<typed_gene>(*this); }
 
       T value() const { return value_; }
 
@@ -142,7 +143,7 @@ namespace libbear {
   template<typename T>
   class gene final : public detail::typed_gene<T> {
   public:
-    using ptr = typename std::shared_ptr<gene<T>>;
+    using ptr = typename std::unique_ptr<gene<T>>;
     using base_ptr = typename detail::basic_gene::ptr;
 
   public:
@@ -160,7 +161,7 @@ namespace libbear {
     gene& operator=(gene&&) = default;
 
     base_ptr clone() const override
-    { return std::make_shared<gene>(*this); }
+    { return std::make_unique<gene>(*this); }
 
     range<T> constraints() const { return constraints_; }
 
@@ -214,7 +215,14 @@ namespace libbear {
 
     template<typename... Ts>
     explicit(sizeof...(Ts) == 1) genotype(const gene<Ts>&... gs)
-      : chain_{std::make_shared<gene<Ts>>(gs)...}
+      : chain_{
+          [&gs...]() -> chain {
+            detail::basic_gene::ptr t[] = {std::make_unique<gene<Ts>>(gs)...};
+            chain res{std::make_move_iterator(std::begin(t)),
+                      std::make_move_iterator(std::end(t))};
+            return res;
+          }()
+        }
     {}
 
     genotype(const genotype& g);

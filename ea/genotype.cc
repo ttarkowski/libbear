@@ -9,12 +9,12 @@
 namespace {
 
   template<template<typename> typename C, typename T>
-  C<std::shared_ptr<T>>
-  deep_copy(const C<std::shared_ptr<T>>& c) {
-    C<std::shared_ptr<T>> res{};
-    std::transform(std::begin(c), std::end(c), std::back_inserter(res),
-                   [](std::shared_ptr<T> sp) { return sp->clone(); });
-    
+  C<std::unique_ptr<T>>
+  deep_copy(const C<std::unique_ptr<T>>& c) {
+    C<std::unique_ptr<T>> res{};
+    for (auto it = c.begin(); it != c.end(); ++it) {
+      res.push_back((**it).clone());
+    }
     return res;
   }
   
