@@ -81,7 +81,9 @@ namespace libbear {
     public:
       explicit typed_gene(T t) : value_{t} {}
       typed_gene(const typed_gene&) = default;
+      typed_gene(typed_gene&&) = default;
       typed_gene& operator=(const typed_gene&) = default;
+      typed_gene& operator=(typed_gene&&) = default;
 
       base_ptr clone() const override
       { return std::make_shared<typed_gene>(*this); }
