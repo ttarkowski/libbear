@@ -4,32 +4,15 @@
 #include <iterator>
 #include <iostream>
 #include <memory>
+#include <numeric>
+#include <libbear/core/memory.h>
 #include <libbear/ea/genotype.h>
-
-namespace {
-
-  template<template<typename> typename C, typename T>
-  C<std::unique_ptr<T>>
-  deep_copy(const C<std::unique_ptr<T>>& c) {
-    C<std::unique_ptr<T>> res{};
-    for (auto it = c.begin(); it != c.end(); ++it) {
-      res.push_back((**it).clone());
-    }
-    return res;
-  }
-  
-}
-
-libbear::genotype::
-genotype(const genotype& g)
-  : chain_{deep_copy(g.chain_)}
-{}
 
 libbear::genotype&
 libbear::genotype::
 operator=(const genotype& g) {
   if (&g != this) {
-    chain_ = deep_copy(g.chain_);
+    chain_ = deep_copy(g.chain_, [](const auto& x) { return x->clone(); });
   }
   return *this;
 }
@@ -51,8 +34,8 @@ operator==(const genotype& g) const {
 libbear::genotype&
 libbear::genotype::
 random_reset() {
-  for (auto it = this->begin(); it != this->end(); ++it) {
-    (**it).random_reset();
+  for (const auto& x : *this) {
+    x->random_reset();
   }
   return *this;
 }
@@ -61,8 +44,8 @@ std::ostream&
 libbear::
 operator<<(std::ostream& os, const genotype& g) {
   os << "[ ";
-  for (auto it = g.begin(); it != g.end(); ++it) {
-    os << **it << ' ';
+  for (const auto& x : g) {
+    os << *x << ' ';
   }
   os << ']';
   return os;
@@ -71,12 +54,8 @@ operator<<(std::ostream& os, const genotype& g) {
 std::size_t
 std::hash<libbear::genotype>::
 operator()(const libbear::genotype& g) const noexcept {
-  // TODO: Better hash function?
   const std::hash<typename libbear::genotype::chain::value_type> h{};
-  std::size_t res{0};
-  for (const auto& x : g) {
-    res ^= h(x);
-  };
-  return res;
+  return std::accumulate(std::begin(g), std::end(g), std::size_t{0},
+                         [&h](auto acc, const auto& x) { return acc ^= h(x); });
 }
 

@@ -10,6 +10,7 @@
 #include <set>
 #include <stdexcept>
 #include <vector>
+#include <libbear/core/memory.h>
 #include <libbear/core/random.h>
 #include <libbear/core/range.h>
 #include <libbear/ea/elements.h>
@@ -225,7 +226,10 @@ namespace libbear {
         }
     {}
 
-    genotype(const genotype& g);
+    genotype(const genotype& g)
+      : chain_{deep_copy(g.chain_, [](const auto& x) { return x->clone(); })}
+    {}
+
     genotype& operator=(const genotype& g);
     std::size_t size() const { return chain_.size(); }
     raw_pointer operator[](std::size_t i) const { return chain_[i].get(); }
