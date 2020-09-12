@@ -3,6 +3,9 @@
 
 #include <algorithm>
 #include <iterator>
+#include <memory>
+#include <type_traits>
+#include <vector>
 
 namespace libbear {
 
@@ -11,6 +14,17 @@ namespace libbear {
     C<Ptr> res{};
     std::transform(std::begin(c), std::end(c), std::back_inserter(res), clone);
     return res;
+  }
+
+  template<typename T>
+  auto make_vector_unique(const auto&... xs) {
+    static_assert((std::is_base_of_v<T, std::remove_cvref_t<decltype(xs)>>
+                   && ...));
+    std::unique_ptr<T> t[] =
+      {std::make_unique<std::remove_cvref_t<decltype(xs)>>(xs)...};
+    return
+      std::vector<std::unique_ptr<T>>{std::make_move_iterator(std::begin(t)),
+                                      std::make_move_iterator(std::end(t))};
   }
 
 }

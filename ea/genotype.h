@@ -4,7 +4,6 @@
 #include <compare>
 #include <cstddef>
 #include <iostream>
-#include <iterator>
 #include <limits>
 #include <memory>
 #include <set>
@@ -13,7 +12,6 @@
 #include <libbear/core/memory.h>
 #include <libbear/core/random.h>
 #include <libbear/core/range.h>
-#include <libbear/ea/elements.h>
 
 namespace libbear {
 
@@ -216,14 +214,7 @@ namespace libbear {
 
     template<typename... Ts>
     explicit(sizeof...(Ts) == 1) genotype(const gene<Ts>&... gs)
-      : chain_{
-          [&gs...]() -> chain {
-            detail::basic_gene::ptr t[] = {std::make_unique<gene<Ts>>(gs)...};
-            chain res{std::make_move_iterator(std::begin(t)),
-                      std::make_move_iterator(std::end(t))};
-            return res;
-          }()
-        }
+      : chain_{make_vector_unique<detail::basic_gene>(gs...)}
     {}
 
     genotype(const genotype& g)
