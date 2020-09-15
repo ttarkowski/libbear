@@ -153,7 +153,9 @@ namespace libbear {
       }
     }
 
+    explicit gene(const range<T>& r) : gene{r.midpoint(), r} {}
     gene(T t, T min, T max) : gene{t, range<T>{min, max}} {}
+    gene(T min, T max) : gene{range<T>{min, max}} {}
     gene(const gene&) = default;
     gene(gene&&) = default;
     gene& operator=(const gene&) = default;
