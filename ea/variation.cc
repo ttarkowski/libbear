@@ -47,7 +47,7 @@ operator()(const population& p) const {
       res.push_back(g);
     }
   }
-  assert(res.size() == p.size() || res.size() == 2 * p.size());
+  assert(res.size() == p.size() / 2 || res.size() == p.size());
   return res;
 }
 
