@@ -1,8 +1,9 @@
 #ifndef LIBBEAR_CORE_RANGE_H
 #define LIBBEAR_CORE_RANGE_H
 
-#include <limits>
 #include <iostream>
+#include <limits>
+#include <numeric>
 #include <stdexcept>
 #include <type_traits>
 
@@ -30,6 +31,7 @@ namespace libbear {
     range& operator=(range&&) = default;
     T min() const { return min_; }
     T max() const { return max_; }
+    T midpoint const { return std::midpoint(min_, max_); }
     bool contains(T t) const { return t >= min_ && t <= max_; }
     auto operator<=>(const range<T>& r) const = default;
     
