@@ -41,6 +41,10 @@ namespace libbear {
     const termination_condition terminate_;
   };
   
+  inline termination_condition max_iterations_termination(std::size_t max) {
+    return [=](std::size_t i, const generations&) { return i == max; };
+  }
+
 }
 
 #endif // LIBBEAR_EVOLUTION_H
