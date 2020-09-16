@@ -20,6 +20,15 @@ namespace {
 
 }
 
+libbear::populate_2_fn
+libbear::adapter(const populate_1_fn& fn) {
+  return [=](std::size_t sz, const population& p0, const population& p1) {
+    population p{p0};
+    p.insert(p.end(), p1.begin(), p1.end());
+    return fn(sz, p);
+  };
+}
+
 libbear::selection_probabilities
 libbear::cumulative_probabilities(const selection_probabilities_fn& spf,
                                   const population& p) {

@@ -7,6 +7,8 @@
 
 namespace libbear {
 
+  populate_2_fn adapter(const populate_1_fn& fn);
+
   selection_probabilities
   cumulative_probabilities(const selection_probabilities_fn& spf,
                            const population& p);
