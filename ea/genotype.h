@@ -57,6 +57,14 @@ namespace libbear {
       typed_gene<T>& value(T t)
       { return static_cast<typed_gene<T>*>(this)->value(t); }
 
+      template<typename T>
+      range<T> constraints() const
+      { return static_cast<const gene<T>*>(this)->constraints(); }
+
+      template<typename T>
+      gene<T>& constraints(const range<T>& r)
+      { return static_cast<gene<T>*>(this)->constraints(r); }
+
       virtual basic_gene& random_reset() = 0;
 
       friend std::ostream& operator<<(std::ostream& os, const basic_gene& bg)
@@ -123,6 +131,7 @@ namespace libbear {
 
     private:
       using basic_gene::value;
+      using basic_gene::constraints;
 
       bool equal(const basic_gene& bg) const override {
         const auto g = static_cast<const typed_gene&>(bg);
