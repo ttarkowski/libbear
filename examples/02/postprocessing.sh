@@ -18,7 +18,12 @@ do
     set o \"${out}\"; \
     set title \"${i}\"; \
     set pm3d; \
-    set view 0, 0; \
+    set cbtics 0.5; \
+    unset border; \
+    unset xtics; \
+    unset ytics; \
+    unset ztics; \
+    set view 60, 350; \
     splot f(x, y) notitle, \
           \"${temp}\" u 2:3:(f(\$2, \$3)) pt 7 notitle; \
     set o" | gnuplot
