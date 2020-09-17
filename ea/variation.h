@@ -71,6 +71,36 @@ namespace libbear {
   namespace detail {
 
     template<typename T>
+    class iterative_mutation_on_range {
+    public:
+      using fn = std::function<std::tuple<T>(T)>;
+      using arg_t = std::tuple<fn, std::size_t, std::size_t>;
+
+    public:
+      explicit iterative_mutation_on_range(const arg_t& arg)
+        : f_{std::get<0>(arg)}
+        , start_{std::get<1>(arg)}
+        , length_{std::get<2>(arg)}
+      {}
+
+      void operator()(genotype& g) const {
+        if (g.size() < start_ + length_) {
+          throw
+            std::logic_error{"iterative_mutation_on_range: size mismatch"};
+        }
+        for (std::size_t i = start_; i < start_ + length_; ++i) {
+          const auto [a] = f_(g[i]->value<T>());
+          g[i]->value<T>(a);
+        }
+      }
+
+    private:
+      fn f_;
+      std::size_t start_;
+      std::size_t length_;
+    };
+
+    template<typename T>
     class iterative_recombination_on_range {
     public:
       using fn = std::function<std::tuple<T, T>(T, T)>;
@@ -103,6 +133,30 @@ namespace libbear {
 
   } // namespace detail
 
+  template<typename... Ts>
+  class iterative_mutation : public detail::iterative_mutation_on_range<Ts>... {
+    template<typename T>
+    using base = detail::iterative_mutation_on_range<T>;
+
+  public:
+    template<typename T>
+    using fn = std::function<std::tuple<T>(T)>;
+
+    template<typename T>
+    using arg_t = std::tuple<fn<T>, std::size_t, std::size_t>;
+
+  public:
+    explicit(sizeof...(Ts) == 1)
+    iterative_mutation(const arg_t<Ts>&... args) : base<Ts>{args}...
+    {}
+
+    population operator()(const genotype& g) const {
+      genotype g_res{g};
+      (base<Ts>::operator()(g_res), ...);
+      return population{g_res};
+    }
+  };
+
   template<std::size_t N, typename... Ts>
   class iterative_recombination
     : public detail::iterative_recombination_on_range<Ts>... {
@@ -130,12 +184,8 @@ namespace libbear {
       genotype g0_res{g0};
       genotype g1_res{g1};
       (base<Ts>::operator()(g0_res, g1_res), ...);
-      if (N == 1) {
-        assert(g0_res == g1_res);
-        return population{g0_res};
-      } else {
-        return population{g0_res, g1_res};
-      }
+      assert(N != 1 || g0_res == g1_res);
+      return N == 1? population{g0_res} : population{g0_res, g1_res};
     }
   };
 
