@@ -6,6 +6,7 @@
 #include <numeric>
 #include <stdexcept>
 #include <tuple>
+#include <type_traits>
 #include <libbear/core/random.h>
 #include <libbear/ea/elements.h>
 #include <libbear/ea/genotype.h>
@@ -208,6 +209,29 @@ namespace libbear {
       g0.size()}
     }(g0, g1);
   }
+
+  template<typename T>
+  class Gaussian_mutation {
+    static_assert(std::is_floating_point_v<T>);
+
+  public:
+    explicit Gaussian_mutation(T sigma) : sigma_{sigma} {}
+
+    population operator()(const genotype& g) {
+      using type = typename iterative_mutation<T>::arg_t<T>;
+      return iterative_mutation<T>{
+        type{[this, n = random_from_normal_distribution<T>](const gene<T>& a) {
+          const T res = a.constraints().clamp()(a.value() + sigma_ * n(0., 1.));
+          return std::tuple<gene<T>>{gene<T>{res, a.constraints()}};
+        },
+        0,
+        g.size()}
+      }(g);
+    }
+
+  private:
+    T sigma_;
+  };
 
 } // namespace libbear
 
