@@ -84,7 +84,7 @@ namespace libbear {
         , length_{std::get<2>(arg)}
       {}
 
-      void operator()(genotype& g) const {
+      void operator()(const genotype& g) const {
         if (g.size() < start_ + length_) {
           throw
             std::logic_error{"iterative_mutation_on_range: size mismatch"};
@@ -114,7 +114,7 @@ namespace libbear {
         , length_{std::get<2>(arg)}
       {}
 
-      void operator()(genotype& g0, genotype& g1) const {
+      void operator()(const genotype& g0, const genotype& g1) const {
         if (std::min(g0.size(), g1.size()) < start_ + length_) {
           throw
             std::logic_error{"iterative_recombination_on_range: size mismatch"};
