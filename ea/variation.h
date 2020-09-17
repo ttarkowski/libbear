@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <numeric>
 #include <stdexcept>
 #include <tuple>
 #include <libbear/core/random.h>
@@ -194,7 +195,7 @@ namespace libbear {
     using type = typename iterative_recombination<1, T>::arg_t<T>;
     return iterative_recombination<1, T>{
       type{[](T a, T b) {
-        const T res = 0.5 * a + 0.5 * b;
+        const T res = std::midpoint(a, b);
         return std::tuple<T, T>{res, res};
       },
       0,
