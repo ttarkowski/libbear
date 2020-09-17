@@ -6,7 +6,7 @@ out=plot.png
 
 for i in `cat evolution.dat | awk '{ print $1 }' | uniq`
 do
-  cat ${file} | grep ^${i} > ${temp}
+  cat ${file} | grep "^${i} " > ${temp}
   echo "\
     reset; \
     set samples 1000, 1000; \
