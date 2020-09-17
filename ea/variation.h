@@ -221,7 +221,7 @@ namespace libbear {
       using type = typename iterative_mutation<T>::arg_t<T>;
       return iterative_mutation<T>{
         type{[this, n = random_from_normal_distribution<T>](const gene<T>& a) {
-          const T res = a.constraints().clamp()(a.value() + sigma_ * n(0., 1.));
+          const T res = a.constraints().clamp(a.value() + sigma_ * n(0., 1.));
           return std::tuple<gene<T>>{gene<T>{res, a.constraints()}};
         },
         0,
