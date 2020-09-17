@@ -74,7 +74,7 @@ namespace libbear {
     template<typename T>
     class iterative_mutation_on_range {
     public:
-      using fn = std::function<std::tuple<T>(T)>;
+      using fn = std::function<std::tuple<gene<T>>(const gene<T>&)>;
       using arg_t = std::tuple<fn, std::size_t, std::size_t>;
 
     public:
@@ -90,8 +90,8 @@ namespace libbear {
             std::logic_error{"iterative_mutation_on_range: size mismatch"};
         }
         for (std::size_t i = start_; i < start_ + length_; ++i) {
-          const auto [a] = f_(g[i]->value<T>());
-          g[i]->value<T>(a);
+          const auto [a] = f_(*static_cast<gene<T>*>(g[i]));
+          *static_cast<gene<T>*>(g[i]) = a;
         }
       }
 
@@ -104,7 +104,8 @@ namespace libbear {
     template<typename T>
     class iterative_recombination_on_range {
     public:
-      using fn = std::function<std::tuple<T, T>(T, T)>;
+      using fn = std::function<std::tuple<gene<T>, gene<T>>(const gene<T>&,
+                                                            const gene<T>&)>;
       using arg_t = std::tuple<fn, std::size_t, std::size_t>;
 
     public:
@@ -120,9 +121,10 @@ namespace libbear {
             std::logic_error{"iterative_recombination_on_range: size mismatch"};
         }
         for (std::size_t i = start_; i < start_ + length_; ++i) {
-          const auto [a, b] = f_(g0[i]->value<T>(), g1[i]->value<T>());
-          g0[i]->value<T>(a);
-          g1[i]->value<T>(b);
+          const auto [a, b] = f_(*static_cast<gene<T>*>(g0[i]),
+                                 *static_cast<gene<T>*>(g1[i]));
+          *static_cast<gene<T>*>(g0[i]) = a;
+          *static_cast<gene<T>*>(g1[i]) = b;
         }
       }
 
@@ -141,7 +143,7 @@ namespace libbear {
 
   public:
     template<typename T>
-    using fn = std::function<std::tuple<T>(T)>;
+    using fn = std::function<std::tuple<gene<T>>(const gene<T>&)>;
 
     template<typename T>
     using arg_t = std::tuple<fn<T>, std::size_t, std::size_t>;
@@ -168,7 +170,8 @@ namespace libbear {
 
   public:
     template<typename T>
-    using fn = std::function<std::tuple<T, T>(T, T)>;
+    using fn = std::function<std::tuple<gene<T>, gene<T>>(const gene<T>&,
+                                                          const gene<T>&)>;
 
     template<typename T>
     using arg_t = std::tuple<fn<T>, std::size_t, std::size_t>;
@@ -194,9 +197,12 @@ namespace libbear {
   population arithmetic_recombination(const genotype& g0, const genotype& g1) {
     using type = typename iterative_recombination<1, T>::arg_t<T>;
     return iterative_recombination<1, T>{
-      type{[](T a, T b) {
-        const T res = std::midpoint(a, b);
-        return std::tuple<T, T>{res, res};
+      type{[](const gene<T>& a, const gene<T>& b) {
+        if (a.constraints() != b.constraints()) {
+          throw std::logic_error{"arithmetic_recombination: bad constraints"};
+        }
+        const gene<T> res{std::midpoint(a.value(), b.value()), a.constraints()};
+        return std::tuple<gene<T>, gene<T>>{res, res};
       },
       0,
       g0.size()}
