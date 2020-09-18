@@ -1,4 +1,7 @@
 // Evolutionary search for a maximum of given function over domain
+// - function: f(x, y) = cos(0.25 * r(x, y)) + e
+// - domain: [-10, +10] x [-10, +10]
+// - variation type: Gaussian mutation, no recombination
 
 #include <cmath>
 #include <cstddef>
