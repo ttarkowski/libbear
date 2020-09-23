@@ -20,8 +20,8 @@ libbear::fitnesses
 libbear::fitness_function::
 operator()(const population& p) const {
   fitnesses res{};
-  std::transform(std::begin(p), std::end(p), std::back_inserter(res),
-                 [this](const genotype& g) { return operator()(g); });
+  std::ranges::transform(p, std::back_inserter(res),
+                         [this](const genotype& g) { return operator()(g); });
   return res;
 }
 
@@ -31,7 +31,7 @@ operator()(const population& p) const {
   const fitnesses fs{ff_(p)};
   const fitness sum = std::accumulate(std::begin(fs), std::end(fs), fitness{0.});
   selection_probabilities res{};
-  std::transform(std::begin(fs), std::end(fs), std::back_inserter(res),
-                 [sum](fitness f) { return f / sum; });
+  std::ranges::transform(fs, std::back_inserter(res),
+                         [sum](fitness f) { return f / sum; });
   return res;
 }
