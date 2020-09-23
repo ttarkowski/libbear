@@ -18,6 +18,7 @@ namespace libbear {
 
   public:
     using function = std::function<fitness(const genotype&)>;
+    static unsigned int thread_sz;
   
   public:
     explicit fitness_function(const function& f)
@@ -28,12 +29,11 @@ namespace libbear {
     fitness_function& operator=(const fitness_function&) = default;
     fitness operator()(const genotype& g) const;
     fitnesses operator()(const population& p) const;
-    fitnesses operator()(const population& p, std::size_t thread_sz) const;
-
     std::size_t size() const { return fitness_values_->size(); }
 
   private:
     unique_genotypes uncalculated_fitness(const population& p) const;
+    void multithreaded_calculations(const population& p) const;
 
   private:
     function function_;

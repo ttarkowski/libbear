@@ -3,12 +3,16 @@
 #include <iterator>
 #include <future>
 #include <numeric>
+#include <thread>
 #include <unordered_set>
 #include <utility>
 #include <vector>
 #include <libbear/ea/elements.h>
 #include <libbear/ea/fitness.h>
 #include <libbear/ea/genotype.h>
+
+unsigned int
+libbear::fitness_function::thread_sz = std::thread::hardware_concurrency();
 
 // TODO: Consider memoization.
 libbear::fitness
@@ -19,19 +23,33 @@ operator()(const genotype& g) const {
     ? it->second
     : ((*fitness_values_)[g] = function_(g));
 }
-  
+
 libbear::fitnesses
 libbear::fitness_function::
 operator()(const population& p) const {
+  if (thread_sz > 1) {
+    multithreaded_calculations(p);
+  }
   fitnesses res{};
   std::ranges::transform(p, std::back_inserter(res),
                          [this](const genotype& g) { return operator()(g); });
   return res;
 }
 
-libbear::fitnesses
+libbear::fitness_function::unique_genotypes
 libbear::fitness_function::
-operator()(const population& p, std::size_t thread_sz) const {
+uncalculated_fitness(const population& p) const {
+  std::unordered_set<genotype> res{};
+  std::ranges::copy_if(p, std::inserter(res, std::end(res)),
+                       [this](const genotype& g) {
+                         return !fitness_values_->contains(g);
+                       });
+  return res;
+}
+
+void
+libbear::fitness_function::
+multithreaded_calculations(const population& p) const {
   // TODO: Consider thread pool approach or use of HPX library to avoid
   // "starvation" (S in HPX's "SLOW" terminology).
   std::vector<std::future<std::pair<genotype, fitness>>> v{};
@@ -48,18 +66,6 @@ operator()(const population& p, std::size_t thread_sz) const {
   for (auto& x : v) {
     fitness_values_->insert(x.get());
   }
-  return this->operator()(p);
-}
-
-libbear::fitness_function::unique_genotypes
-libbear::fitness_function::
-uncalculated_fitness(const population& p) const {
-  std::unordered_set<genotype> res{};
-  std::ranges::copy_if(p, std::inserter(res, std::end(res)),
-                       [this](const genotype& g) {
-                         return !fitness_values_->contains(g);
-                       });
-  return res;
 }
 
 libbear::selection_probabilities
