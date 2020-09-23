@@ -28,6 +28,8 @@ namespace libbear {
     fitness_function& operator=(const fitness_function&) = default;
     fitness operator()(const genotype& g) const;
     fitnesses operator()(const population& p) const;
+    fitnesses operator()(const population& p, std::size_t thread_sz) const;
+
     std::size_t size() const { return fitness_values_->size(); }
 
   private:

@@ -1,8 +1,11 @@
 #include <algorithm>
 #include <cstddef>
 #include <iterator>
+#include <future>
 #include <numeric>
 #include <unordered_set>
+#include <utility>
+#include <vector>
 #include <libbear/ea/elements.h>
 #include <libbear/ea/fitness.h>
 #include <libbear/ea/genotype.h>
@@ -26,8 +29,31 @@ operator()(const population& p) const {
   return res;
 }
 
+libbear::fitnesses
+libbear::fitness_function::
+operator()(const population& p, std::size_t thread_sz) const {
+  // TODO: Consider thread pool approach or use of HPX library to avoid
+  // "starvation" (S in HPX's "SLOW" terminology).
+  std::vector<std::future<std::pair<genotype, fitness>>> v{};
+  for (std::size_t i = 1; const auto& x : uncalculated_fitness(p)) {
+    v.push_back(std::async(std::launch::async, [this, x]() {
+                             const fitness xf = this->operator()(x);
+                             return std::pair<genotype, fitness>{x, xf};
+                           }));
+    if (i++ % thread_sz == 0) {
+      std::ranges::for_each(v, [](const auto& x) { x.wait(); });
+    }
+  }
+  std::ranges::for_each(v, [](const auto& x) { x.wait(); });
+  for (auto& x : v) {
+    fitness_values_->insert(x.get());
+  }
+  return this->operator()(p);
+}
+
 libbear::fitness_function::unique_genotypes
-libbear::fitness_function::uncalculated_fitness(const population& p) const {
+libbear::fitness_function::
+uncalculated_fitness(const population& p) const {
   std::unordered_set<genotype> res{};
   std::ranges::copy_if(p, std::inserter(res, std::end(res)),
                        [this](const genotype& g) {
