@@ -5,6 +5,7 @@
 #include <functional>
 #include <map>
 #include <memory>
+#include <unordered_set>
 #include <libbear/ea/elements.h>
 #include <libbear/ea/genotype.h>
 
@@ -12,6 +13,9 @@ namespace libbear {
 
   // Fitness function adapted for time consuming fitness value calculations.
   class fitness_function {
+  private:
+    using unique_genotypes = std::unordered_set<genotype>;
+
   public:
     using function = std::function<fitness(const genotype&)>;
   
@@ -25,7 +29,10 @@ namespace libbear {
     fitness operator()(const genotype& g) const;
     fitnesses operator()(const population& p) const;
     std::size_t size() const { return fitness_values_->size(); }
-    
+
+  private:
+    unique_genotypes uncalculated_fitness(const population& p) const;
+
   private:
     function function_;
     std::shared_ptr<std::unordered_map<genotype, fitness>> fitness_values_ =
