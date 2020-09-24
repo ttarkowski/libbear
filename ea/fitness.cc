@@ -27,7 +27,7 @@ operator()(const genotype& g) const {
 libbear::fitnesses
 libbear::fitness_function::
 operator()(const population& p) const {
-  if (thread_sz > 1) {
+  if (thread_sz > 1 && p.size() > 1) {
     multithreaded_calculations(p);
   }
   fitnesses res{};
