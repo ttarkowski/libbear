@@ -75,7 +75,7 @@ int main() {
     if (o == "Calculations failed.\n") {
       throw std::runtime_error{"SCF: calculations failed."};
     }
-    return std::stod(o);
+    return -std::stod(o);
   };
   // domain
   // Min angle can be calculated from this equation:
