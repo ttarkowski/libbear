@@ -71,10 +71,15 @@ multithreaded_calculations(const population& p) const {
 libbear::selection_probabilities
 libbear::fitness_proportional_selection::
 operator()(const population& p) const {
+  // FPS with windowing with workaround for population of equally fit genotypes.
   const fitnesses fs{ff_(p)};
-  const fitness sum = std::accumulate(std::begin(fs), std::end(fs), fitness{0.});
+  const fitness min = *std::ranges::min_element(fs);
+  const auto n = p.size();
+  const fitness delta = 1. / n;
+  const fitness sum =
+    std::accumulate(std::begin(fs), std::end(fs), fitness{0.}) - n * min + 1;
   selection_probabilities res{};
   std::ranges::transform(fs, std::back_inserter(res),
-                         [sum](fitness f) { return f / sum; });
+                         [=](fitness f) { return (f - min + delta) / sum; });
   return res;
 }
