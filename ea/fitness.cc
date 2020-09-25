@@ -2,6 +2,7 @@
 #include <cstddef>
 #include <iterator>
 #include <future>
+#include <limits>
 #include <numeric>
 #include <thread>
 #include <unordered_set>
@@ -80,6 +81,10 @@ operator()(const population& p) const {
     std::accumulate(std::begin(fs), std::end(fs), fitness{0.}) - n * min + 1;
   selection_probabilities res{};
   std::ranges::transform(fs, std::back_inserter(res),
-                         [=](fitness f) { return (f - min + delta) / sum; });
+                         [=](fitness f) {
+                           return f == -std::numeric_limits<fitness>::infinity()
+                             ? .0
+                             : (f - min + delta) / sum;
+                          });
   return res;
 }
