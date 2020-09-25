@@ -9,8 +9,8 @@
 #include <mutex>
 #include <numbers>
 #include <fstream>
-#include <limits>
 #include <sstream>
+#include <stdexcept>
 #include <type_traits>
 #include <libbear/core/range.h>
 #include <libbear/core/system.h>
@@ -72,9 +72,10 @@ int main() {
     const std::string input_filename{unique_filename()};
     input_file(input_filename, distance, angle);
     const auto [o, e] = execute("/bin/bash calc.sh " + input_filename);
-    return o == "Calculations failed.\n"
-      ? -std::numeric_limits<type>::infinity()
-      : -std::stod(o);
+    if (o == "Calculations failed.\n") {
+      throw std::runtime_error{"DFT: SCF calculations have failed."};
+    }
+    return -std::stod(o);
   };
   // domain
   // Min angle can be calculated from this equation:
