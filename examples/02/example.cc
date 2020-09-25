@@ -21,11 +21,11 @@ int main() {
   using type = double;
 
   // function
-  const auto f = [](type x, type y) -> type {
+  const auto f = [](type x, type y) -> fitness {
     const auto r = [](type x, type y) -> type {
       return std::sqrt(x * x + y * y);
     };
-    return std::cos(0.25 * r(x, y)) + std::numbers::e_v<type>;
+    return std::cos(0.25 * r(x, y)) + std::numbers::e_v<fitness>;
   };
   // domain
   const range<type> d{-10., +10.};

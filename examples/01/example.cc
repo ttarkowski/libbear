@@ -21,8 +21,9 @@ int main() {
   using type = double;
 
   // function
-  const auto f = [](type x) -> type {
-    return std::sin(2 * x) * std::exp(-0.05 * x * x) + std::numbers::pi_v<type>;
+  const auto f = [](type x) -> fitness {
+    return
+      std::sin(2 * x) * std::exp(-0.05 * x * x) + std::numbers::pi_v<fitness>;
   };
   // domain
   const range<type> d{-10., +10.};
