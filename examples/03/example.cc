@@ -39,7 +39,7 @@ namespace {
          << "nat = 2\nntyp = 1\ntot_charge = 0." << z << "D+00\n"
          << "occupations = 'smearing'\nsmearing = 'methfessel-paxton'\n"
          << "degauss = 5." << z << "D-03\n" << "ecutwfc = 6." << z << "D+01\n"
-         << "/\n&ELECTRONS\nelectron_maxstep = 100000\nmixing_beta = 7." << z
+         << "/\n&ELECTRONS\nelectron_maxstep = 25\nmixing_beta = 7." << z
          << "D-01\n/\nCELL_PARAMETERS angstrom\n"
          << std::fixed << std::setprecision(9) << 2 * dx << " 0." << z << " 0."
          << z << "\n0." << z << " " << std::fixed << std::setprecision(9)
