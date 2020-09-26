@@ -77,10 +77,10 @@ int main() {
       : -std::stod(o);
   };
   // domain
+  const range<type> distance_range{0.5, 2.}; // Angstrom
   // Min angle can be calculated from this equation:
   // 2 * distance * sin(angle / 2.) >= min bond length == 0.5
   const range<type> angle_range{.25, std::numbers::pi_v<type>}; // rad
-  const range<type> bond_range{0.5, 2.}; // Angstrom
 
   const fitness_function ff{
     [&](const genotype& g) {
@@ -89,7 +89,7 @@ int main() {
   };
 
   const auto first_generation_creator =
-    random_population{genotype{gene{angle_range}, gene{bond_range}}};
+    random_population{genotype{gene{distance_range}, gene{angle_range}}};
   const auto parents_selection =
     roulette_wheel_selection{fitness_proportional_selection{ff}};
   const auto survivor_selection =
