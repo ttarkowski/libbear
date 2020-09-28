@@ -34,6 +34,9 @@ namespace {
     T dx = distance * std::sin(angle / 2.);
     T dy = distance * std::cos(angle / 2.);
     const std::string z{"000000000"};
+    // With electron_maxstep == 25 about 5% of SCF calculations will not finish,
+    // but with current threading style it is beneficial to use this kind of
+    // strategy.
     file << "&CONTROL\ncalculation = 'scf'\nprefix = 'dft'\npseudo_dir = './'\n"
          << "outdir = 'results-" << filename << "'\n/\n&SYSTEM\nibrav = 0\n"
          << "nat = 2\nntyp = 1\ntot_charge = 0." << z << "D+00\n"
