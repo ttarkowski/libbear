@@ -37,7 +37,7 @@ libbear::cumulative_probabilities(const selection_probabilities_fn& spf,
   std::partial_sum(res.begin(), res.end(), res.begin());
   if (debug) {
     for (std::size_t i = 0; const auto& x : p) {
-      DEBUG_MSG(x << ": " << res[i]);
+      DEBUG_MSG(x << ": " << res[i++]);
     }
   }
   // Last element should be exactly equal to 1. and another part of algorithm
