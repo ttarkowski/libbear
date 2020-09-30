@@ -80,7 +80,7 @@ int main() {
       : -std::stod(o);
   };
   // domain
-  const range<type> distance_range{0.5, 2.}; // Angstrom
+  const range<type> distance_range{0.5, 2.5}; // Angstrom
   // Min angle can be calculated from this equation:
   // 2 * distance * sin(angle / 2.) >= min bond length == 0.5
   const range<type> angle_range{.25, std::numbers::pi_v<type>}; // rad
