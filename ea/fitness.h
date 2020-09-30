@@ -44,12 +44,8 @@ namespace libbear {
       std::make_shared<std::unordered_map<genotype, fitness>>();
   };
   
-  fitnesses select_calculable(const fitnesses& fs);
-  fitness min_calculable(const fitnesses& fs);
-  fitness max_calculable(const fitnesses& fs);
-  fitness sum_calculable(const fitnesses& fs);
-  std::size_t sizeof_calculable(const fitnesses& fs,
-                                bool require_nonzero = false);
+  fitnesses select_calculable(const fitnesses& fs,
+                              bool require_nonempty_result = false);
 
   class fitness_proportional_selection {
   public:
