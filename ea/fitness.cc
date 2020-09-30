@@ -72,19 +72,29 @@ multithreaded_calculations(const population& p) const {
 libbear::selection_probabilities
 libbear::fitness_proportional_selection::
 operator()(const population& p) const {
-  // FPS with windowing with workaround for population of equally fit genotypes.
+  // FPS with windowing with workarounds for:
+  // a) population of equally fit genotypes and
+  // b) populations containing genotypes which fitnesses cannot be calculated
+  // Please note that in b) case, there should be at least one genotype, which
+  // fitness can be calculated.
   const fitnesses fs{ff_(p)};
-  const fitness min = *std::ranges::min_element(fs);
-  const auto n = p.size();
+  fitnesses fs2{};
+  std::ranges::copy_if(fs, std::back_inserter(fs2),
+                       [](fitness f) { return f != incalculable; });
+  const fitness min = *std::ranges::min_element(fs2);
+  const auto n = fs2.size();
+  if (n == 0) {
+    throw
+      std::runtime_error{"fitness_proportional_selection: no useful values"};
+  }
   const fitness delta = 1. / n;
   const fitness sum =
-    std::accumulate(std::begin(fs), std::end(fs), fitness{0.}) - n * min + 1;
+    std::accumulate(std::begin(fs2), std::end(fs2), fitness{0.}) - n * min + 1;
   selection_probabilities res{};
   std::ranges::transform(fs, std::back_inserter(res),
                          [=](fitness f) {
-                           return f == -std::numeric_limits<fitness>::infinity()
-                             ? .0
-                             : (f - min + delta) / sum;
-                          });
+                           return
+                             f == incalculable? .0 : (f - min + delta) / sum;
+                         });
   return res;
 }

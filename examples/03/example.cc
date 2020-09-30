@@ -6,7 +6,6 @@
 #include <cmath>
 #include <cstddef>
 #include <iomanip>
-#include <limits>
 #include <mutex>
 #include <numbers>
 #include <fstream>
@@ -75,9 +74,7 @@ int main() {
     const std::string input_filename{unique_filename()};
     input_file(input_filename, distance, angle);
     const auto [o, e] = execute("/bin/bash calc.sh " + input_filename);
-    return o == "Calculations failed.\n"
-      ? -std::numeric_limits<fitness>::infinity()
-      : -std::stod(o);
+    return o == "Calculations failed.\n"? incalculable : -std::stod(o);
   };
   // domain
   const range<type> distance_range{0.5, 2.5}; // Angstrom

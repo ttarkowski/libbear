@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <functional>
+#include <limits>
 #include <map>
 #include <memory>
 #include <unordered_set>
@@ -10,6 +11,8 @@
 #include <libbear/ea/genotype.h>
 
 namespace libbear {
+
+  const fitness incalculable = -std::numeric_limits<fitness>::infinity();
 
   // Fitness function adapted for time consuming fitness value calculations.
   class fitness_function {
