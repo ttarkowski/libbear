@@ -79,12 +79,14 @@ libbear::select_calculable(const fitnesses& fs) {
 
 libbear::fitness
 libbear::min_calculable(const fitnesses& fs) {
-  return *std::ranges::min_element(select_calculable(fs));
+  const auto cal = select_calculable(fs);
+  return *std::ranges::min_element(cal);
 }
 
 libbear::fitness
 libbear::max_calculable(const fitnesses& fs) {
-  return *std::ranges::max_element(select_calculable(fs));
+  const auto cal = select_calculable(fs);
+  return *std::ranges::max_element(cal);
 }
 
 libbear::fitness
