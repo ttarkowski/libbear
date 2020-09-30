@@ -45,6 +45,11 @@ namespace libbear {
   };
   
   fitnesses select_calculable(const fitnesses& fs);
+  fitness min_calculable(const fitnesses& fs);
+  fitness max_calculable(const fitnesses& fs);
+  fitness sum_calculable(const fitnesses& fs);
+  std::size_t sizeof_calculable(const fitnesses& fs,
+                                bool require_nonzero = false);
 
   class fitness_proportional_selection {
   public:

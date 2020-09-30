@@ -77,6 +77,31 @@ libbear::select_calculable(const fitnesses& fs) {
   return res;
 }
 
+libbear::fitness
+libbear::min_calculable(const fitnesses& fs) {
+  return *std::ranges::min_element(select_calculable(fs));
+}
+
+libbear::fitness
+libbear::max_calculable(const fitnesses& fs) {
+  return *std::ranges::max_element(select_calculable(fs));
+}
+
+libbear::fitness
+libbear::sum_calculable(const fitnesses& fs) {
+  const auto cal = select_calculable(fs);
+  return std::accumulate(std::begin(cal), std::end(cal), fitness{0.});
+}
+
+std::size_t
+libbear::sizeof_calculable(const fitnesses& fs, bool require_nonzero) {
+  const auto sz = select_calculable(fs).size();
+  if (require_nonzero && sz == 0) {
+    throw std::runtime_error{"sizeof_calculable: no calculable fitnesses"};
+  }
+  return sz;
+}
+
 libbear::selection_probabilities
 libbear::fitness_proportional_selection::
 operator()(const population& p) const {
@@ -86,16 +111,10 @@ operator()(const population& p) const {
   // Please note that in b) case, there should be at least one genotype, which
   // fitness can be calculated.
   const fitnesses fs{ff_(p)};
-  const fitnesses calc = select_calculable(fs);
-  const fitness min = *std::ranges::min_element(calc);
-  const auto n = calc.size();
-  if (n == 0) {
-    throw
-      std::runtime_error{"fitness_proportional_selection: no useful values"};
-  }
+  const fitness min = min_calculable(fs);
+  const auto n = sizeof_calculable(fs, true);
   const fitness delta = 1. / n;
-  const fitness sum =
-    std::accumulate(std::begin(calc),std::end(calc), fitness{0.}) - n * min + 1;
+  const fitness sum = sum_calculable(fs) - n * min + 1;
   selection_probabilities res{};
   std::ranges::transform(fs, std::back_inserter(res),
                          [=](fitness f) {
