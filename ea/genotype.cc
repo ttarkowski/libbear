@@ -8,11 +8,14 @@
 #include <libbear/core/memory.h>
 #include <libbear/ea/genotype.h>
 
+std::size_t libbear::genotype::id_counter = 0;
+
 libbear::genotype&
 libbear::genotype::
 operator=(const genotype& g) {
   if (&g != this) {
     chain_ = deep_copy(g.chain_, [](const auto& x) { return x->clone(); });
+    id_ = g.id_;
   }
   return *this;
 }
@@ -28,6 +31,7 @@ operator==(const genotype& g) const {
       return false;
     }
   }
+  // I do not compare id_ fields.
   return true;    
 }
 
@@ -43,7 +47,7 @@ random_reset() {
 std::ostream&
 libbear::
 operator<<(std::ostream& os, const genotype& g) {
-  os << "[ ";
+  os << "[id: " << g.id() << " genes: ";
   for (const auto& x : g) {
     os << *x << ' ';
   }
@@ -54,8 +58,7 @@ operator<<(std::ostream& os, const genotype& g) {
 std::size_t
 std::hash<libbear::genotype>::
 operator()(const libbear::genotype& g) const noexcept {
-  const std::hash<typename libbear::genotype::chain::value_type> h{};
-  return std::accumulate(std::begin(g), std::end(g), std::size_t{0},
-                         [&h](auto acc, const auto& x) { return acc ^= h(x); });
+  static const std::hash<std::size_t> h{};
+  return h(g.id());
 }
 

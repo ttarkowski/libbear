@@ -219,21 +219,25 @@ namespace libbear {
     using const_iterator = typename chain::const_iterator;
     using iterator = typename chain::iterator;
     using raw_pointer = detail::basic_gene*;
+    static std::size_t id_counter;
     
   public:
-    genotype() = default;
+    genotype() : chain_{}, id_{id_counter++} {}
 
     template<typename... Ts>
     explicit(sizeof...(Ts) == 1) genotype(const gene<Ts>&... gs)
       : chain_{make_vector_unique<detail::basic_gene>(gs...)}
+      , id_{id_counter++}
     {}
 
     genotype(const genotype& g)
       : chain_{deep_copy(g.chain_, [](const auto& x) { return x->clone(); })}
+      , id_{g.id_}
     {}
 
     genotype& operator=(const genotype& g);
     std::size_t size() const { return chain_.size(); }
+    std::size_t id() const { return id_; }
     raw_pointer operator[](std::size_t i) const { return chain_[i].get(); }
     raw_pointer at(std::size_t i) const { return chain_.at(i).get(); }
     const_iterator begin() const { return chain_.begin(); }
@@ -246,6 +250,7 @@ namespace libbear {
     
   private:
     chain chain_;
+    std::size_t id_;
   };
   
   std::ostream& operator<<(std::ostream&, const genotype&);
