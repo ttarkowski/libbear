@@ -54,9 +54,7 @@ libbear::population
 libbear::random_population::
 operator()(std::size_t lambda) const {
   return generate(lambda,
-                  [g = g_]() mutable -> genotype {
-                    return g.random_reset().new_id();
-                  });
+                  [g = g_]() mutable -> genotype { return g.random_reset(); });
 }
 
 libbear::population

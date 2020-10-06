@@ -3,6 +3,7 @@
 
 #include <compare>
 #include <cstddef>
+#include <functional>
 #include <iostream>
 #include <limits>
 #include <memory>
@@ -66,6 +67,7 @@ namespace libbear {
       { return static_cast<gene<T>*>(this)->constraints(r); }
 
       virtual basic_gene& random_reset() = 0;
+      virtual std::size_t hash() const = 0;
 
       friend std::ostream& operator<<(std::ostream& os, const basic_gene& bg)
       { return bg.print(os); }
@@ -123,6 +125,11 @@ namespace libbear {
           random_from_uniform_distribution<T>(std::numeric_limits<T>::lowest(),
                                               std::numeric_limits<T>::max());
         return *this;
+      }
+
+      std::size_t hash() const override {
+        static const std::hash<T> h{};
+        return h(value_);
       }
 
     protected:
@@ -219,26 +226,21 @@ namespace libbear {
     using const_iterator = typename chain::const_iterator;
     using iterator = typename chain::iterator;
     using raw_pointer = detail::basic_gene*;
-    static std::size_t id_counter;
     
   public:
-    genotype() : chain_{}, id_{id_counter++} {}
+    genotype() = default;
 
     template<typename... Ts>
     explicit(sizeof...(Ts) == 1) genotype(const gene<Ts>&... gs)
       : chain_{make_vector_unique<detail::basic_gene>(gs...)}
-      , id_{id_counter++}
     {}
 
     genotype(const genotype& g)
       : chain_{deep_copy(g.chain_, [](const auto& x) { return x->clone(); })}
-      , id_{g.id_}
     {}
 
     genotype& operator=(const genotype& g);
     std::size_t size() const { return chain_.size(); }
-    std::size_t id() const { return id_; }
-    genotype& new_id();
     raw_pointer operator[](std::size_t i) const { return chain_[i].get(); }
     raw_pointer at(std::size_t i) const { return chain_.at(i).get(); }
     const_iterator begin() const { return chain_.begin(); }
@@ -251,7 +253,6 @@ namespace libbear {
     
   private:
     chain chain_;
-    std::size_t id_;
   };
   
   std::ostream& operator<<(std::ostream&, const genotype&);
