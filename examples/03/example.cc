@@ -1,12 +1,12 @@
 // Evolutionary search for the best crystal structure of boron nanostripe
 // - function: self consistent field calculations with Quantum ESPRESSO
-// - domain: [.25, pi] x [0.5, 2.]
+// - domain: [.25, pi] x [0.5, 2.5]
 // - variation type: Gaussian mutation and arithmetic recombination
 
+#include <atomic>
 #include <cmath>
 #include <cstddef>
 #include <iomanip>
-#include <mutex>
 #include <numbers>
 #include <fstream>
 #include <sstream>
@@ -54,9 +54,7 @@ namespace {
   }
 
   std::string unique_filename() {
-    static std::size_t i{0};
-    static std::mutex m{};
-    std::lock_guard<std::mutex> g{m};
+    static std::atomic_size_t i{0};
     std::ostringstream oss{};
     oss << "stripe-" << i++ << ".in";
     return oss.str();
