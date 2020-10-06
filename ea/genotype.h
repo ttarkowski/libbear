@@ -238,6 +238,7 @@ namespace libbear {
     genotype& operator=(const genotype& g);
     std::size_t size() const { return chain_.size(); }
     std::size_t id() const { return id_; }
+    genotype& new_id();
     raw_pointer operator[](std::size_t i) const { return chain_[i].get(); }
     raw_pointer at(std::size_t i) const { return chain_.at(i).get(); }
     const_iterator begin() const { return chain_.begin(); }

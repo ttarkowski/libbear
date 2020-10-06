@@ -20,6 +20,12 @@ operator=(const genotype& g) {
   return *this;
 }
 
+libbear::genotype&
+libbear::genotype::new_id() {
+  id_ = id_counter++;
+  return *this;
+}
+
 bool
 libbear::genotype::
 operator==(const genotype& g) const {
