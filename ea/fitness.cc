@@ -8,6 +8,7 @@
 #include <unordered_set>
 #include <utility>
 #include <vector>
+#include <libbear/core/debug.h>
 #include <libbear/ea/elements.h>
 #include <libbear/ea/fitness.h>
 #include <libbear/ea/genotype.h>
@@ -20,6 +21,9 @@ libbear::fitness
 libbear::fitness_function::
 operator()(const genotype& g) const {
   auto it{ fitness_values_->find(g) };
+  DEBUG_MSG(it != fitness_values_->end()
+            ? "Fitness taken from database"
+            : "Fitness must be calculated");
   return it != fitness_values_->end()
     ? it->second
     : ((*fitness_values_)[g] = function_(g));
@@ -53,6 +57,7 @@ libbear::fitness_function::
 multithreaded_calculations(const population& p) const {
   // TODO: Consider thread pool approach or use of HPX library to avoid
   // "starvation" (S in HPX's "SLOW" terminology).
+  DEBUG_MSG("Multithreaded calculations: begin");
   std::vector<std::future<std::pair<genotype, fitness>>> v{};
   for (std::size_t i = 1; const auto& x : uncalculated_fitness(p)) {
     v.push_back(std::async(std::launch::async, [this, x]() {
@@ -67,6 +72,7 @@ multithreaded_calculations(const population& p) const {
   for (auto& x : v) {
     fitness_values_->insert(x.get());
   }
+  DEBUG_MSG("Multithreaded calculations: end");
 }
 
 libbear::fitnesses
@@ -88,6 +94,7 @@ operator()(const population& p) const {
   // b) populations containing genotypes which fitnesses cannot be calculated
   // Please note that in b) case, there should be at least one genotype, which
   // fitness can be calculated.
+  DEBUG_MSG("Fitness proportional selection");
   const fitnesses fs{ff_(p)};
   const auto cal = select_calculable(fs, true);
   const fitness min = *std::ranges::min_element(cal);

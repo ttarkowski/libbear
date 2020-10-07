@@ -1,4 +1,5 @@
 #include <cstddef>
+#include <libbear/core/debug.h>
 #include <libbear/ea/elements.h>
 #include <libbear/ea/evolution.h>
 #include <libbear/ea/genotype.h>
@@ -22,6 +23,7 @@ libbear::evolution::
 operator()() const {
   generations res{};
   for (std::size_t i = 0; !terminate_(i++, res);) {
+    DEBUG_MSG("Generation #" << i);
     res.push_back(create_generation_());
   }
   return res;

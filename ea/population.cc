@@ -4,7 +4,6 @@
 #include <functional>
 #include <iterator>
 #include <numeric>
-#include <libbear/core/debug.h>
 #include <libbear/core/random.h>
 #include <libbear/ea/elements.h>
 #include <libbear/ea/genotype.h>
@@ -35,11 +34,6 @@ libbear::cumulative_probabilities(const selection_probabilities_fn& spf,
                                   const population& p) {
   auto res = spf(p);
   std::partial_sum(res.begin(), res.end(), res.begin());
-  if (debug) {
-    for (std::size_t i = 0; const auto& x : p) {
-      DEBUG_MSG(x << ": " << res[i++]);
-    }
-  }
   // Last element should be exactly equal to 1. and another part of algorithm
   // might require this exact identity. Unfortunately, numerical calculations
   // might not be so precise. Let's check if last element is calculated with

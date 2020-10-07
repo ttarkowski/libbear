@@ -1,4 +1,5 @@
 #include <stdexcept>
+#include <libbear/core/debug.h>
 #include <libbear/ea/elements.h>
 #include <libbear/ea/genotype.h>
 #include <libbear/ea/variation.h>
@@ -28,7 +29,9 @@ libbear::population
 libbear::variation::
 operator()(const genotype& g0, const genotype& g1) const {
   population res{};
+  DEBUG_MSG("Recombination: " << g0 << " + " << g1);
   for (const auto& g : recombine_(g0, g1)) {
+    DEBUG_MSG("Mutation: " << g);
     res.push_back(mutate_(g).at(0));
   }
   assert(res.size() == 1 || res.size() == 2);
