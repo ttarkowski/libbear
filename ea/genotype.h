@@ -127,10 +127,7 @@ namespace libbear {
         return *this;
       }
 
-      std::size_t hash() const override {
-        static const std::hash<T> h{};
-        return h(value_);
-      }
+      std::size_t hash() const override { return std::hash<T>{}(value_); }
 
     protected:
       std::ostream& print(std::ostream& os) const override

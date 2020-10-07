@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <climits>
 #include <cstddef>
 #include <functional>
 #include <iterator>
@@ -54,10 +55,11 @@ operator<<(std::ostream& os, const genotype& g) {
 std::size_t
 std::hash<libbear::genotype>::
 operator()(const libbear::genotype& g) const noexcept {
-  return std::accumulate(std::begin(g), std::end(g),
-                         std::size_t{0},
-                         [](std::size_t acc, const auto& p) {
-                           return acc ^ p->hash();
-                         });
+  const std::size_t sz{sizeof(std::size_t) * CHAR_BIT};
+  std::size_t res{0};
+  for (std::size_t i = 0; const auto& x : g) {
+    res ^= x->hash() << i++ % sz;
+  }
+  return res;
 }
 
