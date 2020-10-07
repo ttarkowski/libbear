@@ -21,12 +21,11 @@ libbear::fitness
 libbear::fitness_function::
 operator()(const genotype& g) const {
   auto it{ fitness_values_->find(g) };
-  DEBUG_MSG(it != fitness_values_->end()
-            ? "Fitness taken from database"
-            : "Fitness must be calculated");
-  return it != fitness_values_->end()
-    ? it->second
-    : ((*fitness_values_)[g] = function_(g));
+  const auto p = it != fitness_values_->end();
+  const auto str = p ? "Fitness taken from database"
+                     : "Fitness must be calculated";
+  DEBUG_MSG(str);
+  return p ? it->second  : ((*fitness_values_)[g] = function_(g));
 }
 
 libbear::fitnesses
