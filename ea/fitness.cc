@@ -60,7 +60,8 @@ multithreaded_calculations(const population& p) const {
   std::vector<std::future<std::pair<genotype, fitness>>> v{};
   for (std::size_t i = 1; const auto& x : uncalculated_fitness(p)) {
     v.push_back(std::async(std::launch::async, [this, x]() {
-                             const fitness xf = this->operator()(x);
+                             DEBUG_MSG("Asynchronous fitness calculations");
+                             const fitness xf = this->function_(x);
                              return std::pair<genotype, fitness>{x, xf};
                            }));
     if (i++ % thread_sz == 0) {
