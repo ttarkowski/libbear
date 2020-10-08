@@ -15,8 +15,8 @@ namespace libbear {
     explicit thread_pool(std::size_t sz) : free_threads_{sz} {}
 
     template<typename T>
-    std::future<T> async(const std::function<T()>& f) {
-      return std::async([this, f]() {
+    std::future<T> async(std::launch policy, const std::function<T()>& f) {
+      return std::async(policy, [this, f]() {
                           acquire();
                           if constexpr (std::is_same_v<T, void>) {
                             f();
