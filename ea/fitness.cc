@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 #include <libbear/core/debug.h>
+#include <libbear/core/thread.h>
 #include <libbear/ea/elements.h>
 #include <libbear/ea/fitness.h>
 #include <libbear/ea/genotype.h>
@@ -54,21 +55,17 @@ uncalculated_fitness(const population& p) const {
 void
 libbear::fitness_function::
 multithreaded_calculations(const population& p) const {
-  // TODO: Consider thread pool approach or use of HPX library to avoid
-  // "starvation" (S in HPX's "SLOW" terminology).
   DEBUG_MSG("Multithreaded calculations: begin");
-  std::vector<std::future<std::pair<genotype, fitness>>> v{};
-  for (std::size_t i = 1; const auto& x : uncalculated_fitness(p)) {
-    v.push_back(std::async(std::launch::async, [this, x]() {
-                             DEBUG_MSG("Asynchronous fitness calculations");
-                             const fitness xf = this->function_(x);
-                             return std::pair<genotype, fitness>{x, xf};
-                           }));
-    if (i++ % thread_sz == 0) {
-      std::ranges::for_each(v, [](const auto& x) { x.wait(); });
-    }
+  using type = std::pair<genotype, fitness>;
+  thread_pool tp{thread_sz};
+  std::vector<std::future<type>> v{};
+  for (const auto& x : uncalculated_fitness(p)) {
+    v.push_back(tp.async<type>(std::launch::async, [this, x]() {
+                  DEBUG_MSG("Asynchronous fitness calculations");
+                  const fitness xf = this->function_(x);
+                  return type{x, xf};
+                }));
   }
-  std::ranges::for_each(v, [](const auto& x) { x.wait(); });
   for (auto& x : v) {
     fitness_values_->insert(x.get());
   }
