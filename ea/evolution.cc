@@ -38,7 +38,7 @@ libbear::max_fitness_improvement_termination(const fitness_function& ff,
                                              std::size_t n,
                                              double frac) {
   return [=](std::size_t i, const generations& gs) {
-    assert(i + 1 == gs.size());
+    assert(i == gs.size());
     if (gs.size() <= n) {
       return false;
     } else {
