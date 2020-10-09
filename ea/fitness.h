@@ -47,6 +47,14 @@ namespace libbear {
   fitnesses select_calculable(const fitnesses& fs,
                               bool require_nonempty_result = false);
 
+  fitness max(const fitnesses& fs);
+  fitness max(const population& p, const fitness_function& ff);
+  fitnesses max(const generations& gs, const fitness_function& ff);
+
+  fitness min(const fitnesses& fs);
+  fitness min(const population& p, const fitness_function& ff);
+  fitnesses min(const generations& gs, const fitness_function& ff);
+
   class fitness_proportional_selection {
   public:
     explicit fitness_proportional_selection(const fitness_function& ff)

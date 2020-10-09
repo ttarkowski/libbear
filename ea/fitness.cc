@@ -4,6 +4,7 @@
 #include <future>
 #include <limits>
 #include <numeric>
+#include <stdexcept>
 #include <thread>
 #include <unordered_set>
 #include <utility>
@@ -80,6 +81,50 @@ libbear::select_calculable(const fitnesses& fs, bool require_nonempty_result) {
   if (require_nonempty_result && res.size() == 0) {
     throw std::runtime_error{"select_calculable: no calculable fitnesses"};
   }
+  return res;
+}
+
+libbear::fitness
+libbear::
+max(const fitnesses& fs) {
+  const fitnesses calc{select_calculable(fs, true)};
+  return *std::ranges::max_element(calc);
+}
+
+libbear::fitness
+libbear::
+max(const population& p, const fitness_function& ff) {
+  return max(ff(p));
+}
+
+libbear::fitnesses
+libbear::
+max(const generations& gs, const fitness_function& ff) {
+  fitnesses res{};
+  std::transform(gs, std::back_inserter(res),
+                 [&ff](const population& p) { return max(p, ff); });
+  return res;
+}
+
+libbear::fitness
+libbear::
+min(const fitnesses& fs) {
+  const fitnesses calc{select_calculable(fs, true)};
+  return *std::ranges::min_element(calc);
+}
+
+libbear::fitness
+libbear::
+min(const population& p, const fitness_function& ff) {
+  return min(ff(p));
+}
+
+libbear::fitnesses
+libbear::
+min(const generations& gs, const fitness_function& ff) {
+  fitnesses res{};
+  std::transform(gs, std::back_inserter(res),
+                 [&ff](const population& p) { return min(p, ff); });
   return res;
 }
 
