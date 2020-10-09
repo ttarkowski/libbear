@@ -1,3 +1,6 @@
+examples/*/evolution.dat
+examples/*/result.ogv
+tests/*
 *~
 
 # Prerequisites
