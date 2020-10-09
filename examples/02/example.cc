@@ -53,7 +53,7 @@ int main() {
   const std::size_t parents_sz{42};
   const generation_creator::options o{v, generation_sz, parents_sz};
   const generation_creator gc{p, o};
-  const auto tc = max_iterations_termination(100);
+  const auto tc = max_fitness_improvement_termination(ff, 10, 0.05);
   const evolution e{gc, tc};
 
   std::ofstream file{"evolution.dat"};
