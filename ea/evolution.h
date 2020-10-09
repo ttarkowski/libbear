@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <libbear/ea/elements.h>
+#include <libbear/ea/fitness.h>
 #include <libbear/ea/variation.h>
 
 namespace libbear {
