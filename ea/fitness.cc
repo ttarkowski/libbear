@@ -101,8 +101,8 @@ libbear::fitnesses
 libbear::
 max(const generations& gs, const fitness_function& ff) {
   fitnesses res{};
-  std::transform(gs, std::back_inserter(res),
-                 [&ff](const population& p) { return max(p, ff); });
+  std::ranges::transform(gs, std::back_inserter(res),
+                         [&ff](const population& p) { return max(p, ff); });
   return res;
 }
 
@@ -123,8 +123,8 @@ libbear::fitnesses
 libbear::
 min(const generations& gs, const fitness_function& ff) {
   fitnesses res{};
-  std::transform(gs, std::back_inserter(res),
-                 [&ff](const population& p) { return min(p, ff); });
+  std::ranges::transform(gs, std::back_inserter(res),
+                         [&ff](const population& p) { return min(p, ff); });
   return res;
 }
 
