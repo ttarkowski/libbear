@@ -1,6 +1,10 @@
+#include <cassert>
 #include <cstddef>
+#include <iterator>
+#include <vector>
 #include <libbear/core/debug.h>
 #include <libbear/ea/elements.h>
+#include <libbear/ea/fitness.h>
 #include <libbear/ea/evolution.h>
 #include <libbear/ea/genotype.h>
 
@@ -28,3 +32,21 @@ operator()() const {
   }
   return res;
 }
+
+libbear::termination_condition
+libbear::max_fitness_improvement_termination(const fitness_function& ff,
+                                             std::size_t n,
+                                             double frac) {
+  return [=](std::size_t i, const generations& gs) {
+    assert(i + 1 == gs.size());
+    if (gs.size() <= n) {
+      return false;
+    } else {
+      const fitnesses fs{max(gs, ff)};
+      const fitness min_last_n = *std::min_element(fs.end() - n, fs.end());
+      const double x = (max(fs) - min_last_n) / (max(fs) - min(fs));
+      return x <= frac;
+    }
+  };
+}
+

@@ -45,6 +45,11 @@ namespace libbear {
     return [=](std::size_t i, const generations&) { return i == max; };
   }
 
+  termination_condition
+  max_fitness_improvement_termination(const fitness_function& ff,
+                                      std::size_t n,
+                                      double frac);
+
 }
 
 #endif // LIBBEAR_EVOLUTION_H
