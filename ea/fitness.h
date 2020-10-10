@@ -14,6 +14,9 @@ namespace libbear {
 
   const fitness incalculable = -std::numeric_limits<fitness>::infinity();
 
+  const genotype_constraints constraints_satisfied =
+    [](const genotype&) { return true; };
+
   // Fitness function adapted for time consuming fitness value calculations.
   class fitness_function {
   private:
@@ -23,9 +26,16 @@ namespace libbear {
     using function = std::function<fitness(const genotype&)>;
     static unsigned int thread_sz;
   
+  private:
+    static function constrained_fitness_fn(const function& f,
+                                           const genotype_constraints& gc)
+    { return [=](const genotype& g) { return gc(g)? f(g) : incalculable; }; }
+
   public:
-    explicit fitness_function(const function& f)
-      : function_{f}
+    explicit fitness_function(const function& f,
+                              const genotype_constraints& gc =
+                                constraints_satisfied)
+      : function_{constrained_fitness_fn(f, gc)}
     {}
 
     fitness_function(const fitness_function&) = default;

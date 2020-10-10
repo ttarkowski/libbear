@@ -46,6 +46,8 @@ namespace libbear {
   using termination_condition =
     std::function<bool(std::size_t, const generations&)>;
   
+  using genotype_constraints = std::function<bool(const genotype&)>;
+
 } // namespace libbear
 
 #endif // LIBBEAR_EA_ELEMENTS
