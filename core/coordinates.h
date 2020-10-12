@@ -37,9 +37,8 @@ namespace libbear {
   }
 
   template<std::floating_point T>
-  std::tuple<T, T> cart2polar(T x, T y) {
-    return std::tuple<T, T>{std::hypot(x, y), detail::angle(x, y)};
-  }
+  std::tuple<T, T> cart2polar(T x, T y)
+  { return std::tuple<T, T>{std::hypot(x, y), detail::angle(x, y)}; }
 
   template<std::floating_point T>
   std::tuple<T, T> polar2cart(T r, T phi)
