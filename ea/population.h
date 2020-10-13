@@ -3,6 +3,7 @@
 
 #include <functional>
 #include <libbear/ea/elements.h>
+#include <libbear/ea/fitness.h>
 #include <libbear/ea/genotype.h>
 
 namespace libbear {
@@ -15,14 +16,17 @@ namespace libbear {
 
   class random_population {
   public:
-    explicit random_population(const genotype& g)
-      : g_{g}
+    explicit random_population(const genotype& g,
+                               const genotype_constraints& gc =
+                                 constraints_satisfied)
+      : g_{g}, constraints_{gc}
     {}
 
     population operator()(std::size_t lambda) const;
 
   private:
     const genotype g_;
+    const genotype_constraints constraints_;
   };
 
   class roulette_wheel_selection {

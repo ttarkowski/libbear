@@ -48,7 +48,10 @@ libbear::population
 libbear::random_population::
 operator()(std::size_t lambda) const {
   return generate(lambda,
-                  [g = g_]() mutable -> genotype { return g.random_reset(); });
+                  [g = g_, this]() mutable -> genotype {
+                    while(!constraints_(g.random_reset()));
+                    return g;
+                  });
 }
 
 libbear::population
