@@ -72,6 +72,8 @@ namespace libbear {
       friend std::ostream& operator<<(std::ostream& os, const basic_gene& bg)
       { return bg.print(os); }
 
+      virtual void print_value(std::ostream& os) const = 0;
+
       friend bool operator==(const basic_gene& l, const basic_gene& r)
       { return typeid(l) == typeid(r) && l.equal(r); }
 
@@ -128,6 +130,7 @@ namespace libbear {
       }
 
       std::size_t hash() const override { return std::hash<T>{}(value_); }
+      void print_value(std::ostream& os) const override { os << value_; }
 
     protected:
       std::ostream& print(std::ostream& os) const override
@@ -247,6 +250,7 @@ namespace libbear {
     bool operator==(const genotype& g) const;
     genotype& random_reset();
     friend std::ostream& operator<<(std::ostream& os, const genotype& g);
+    void print_simplified_representation(std::ostream& os) const;
     
   private:
     chain chain_;

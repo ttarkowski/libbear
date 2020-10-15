@@ -52,6 +52,17 @@ operator<<(std::ostream& os, const genotype& g) {
   return os;
 }
 
+void
+libbear::genotype::
+print_simplified_representation(std::ostream& os) const {
+  for (std::size_t i = 0; const auto& x : *this) {
+    x->print_value(os);
+    if (++i != this->size()) {
+      os << ' ';
+    }
+  }
+}
+
 std::size_t
 std::hash<libbear::genotype>::
 operator()(const libbear::genotype& g) const noexcept {
