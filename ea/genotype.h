@@ -248,6 +248,10 @@ namespace libbear {
     genotype& random_reset();
     friend std::ostream& operator<<(std::ostream& os, const genotype& g);
     
+    template<typename T>
+    void push_back(const gene<T>& g)
+    { chain_.push_back(std::make_unique<gene<T>>(g)); }
+    
   private:
     chain chain_;
   };
