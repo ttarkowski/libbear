@@ -257,6 +257,13 @@ namespace libbear {
   };
   
   std::ostream& operator<<(std::ostream&, const genotype&);
+
+  template<typename... Ts>
+  genotype merge(const genotype& g, const gene<Ts>&... gs) {
+    genotype res{g};
+    (res.push_back(gs), ...);
+    return res;
+  }
   
 } // namespace libbear
 
