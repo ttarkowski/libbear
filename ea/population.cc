@@ -2,9 +2,12 @@
 #include <cassert>
 #include <cstddef>
 #include <functional>
+#include <future>
 #include <iterator>
 #include <numeric>
+#include <thread>
 #include <libbear/core/random.h>
+#include <libbear/core/thread.h>
 #include <libbear/ea/elements.h>
 #include <libbear/ea/genotype.h>
 #include <libbear/ea/population.h>
@@ -44,14 +47,28 @@ libbear::cumulative_probabilities(const selection_probabilities_fn& spf,
   return res;
 }
 
+unsigned int
+libbear::random_population::thread_sz = std::thread::hardware_concurrency();
+
 libbear::population
 libbear::random_population::
 operator()(std::size_t lambda) const {
-  return generate(lambda,
-                  [g = g_, this]() mutable -> genotype {
-                    while(!constraints_(g.random_reset()));
-                    return g;
-                  });
+  // Serial version generated bottleneck for some conditions.
+  using type = genotype;
+  thread_pool tp{thread_sz};
+  std::vector<std::future<type>> v{};
+  for (std::size_t i = 0; i < lambda; ++i) {
+    v.push_back(tp.async<type>(std::launch::async,
+                               [g = g_, this]() mutable -> type {
+                                 while(!constraints_(g.random_reset()));
+                                 return g;
+                               }));
+  }
+  population res{};
+  for (auto& x : v) {
+    res.push_back(x.get());
+  }
+  return res;
 }
 
 libbear::population

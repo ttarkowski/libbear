@@ -16,6 +16,9 @@ namespace libbear {
 
   class random_population {
   public:
+    static unsigned int thread_sz;
+
+  public:
     explicit random_population(const genotype& g,
                                const genotype_constraints& gc =
                                  constraints_satisfied)
