@@ -6,6 +6,7 @@
 #include <iterator>
 #include <numeric>
 #include <thread>
+#include <libbear/core/debug.h>
 #include <libbear/core/random.h>
 #include <libbear/core/thread.h>
 #include <libbear/ea/elements.h>
@@ -61,6 +62,7 @@ operator()(std::size_t lambda) const {
     v.push_back(tp.async<type>(std::launch::async,
                                [g = g_, this]() mutable -> type {
                                  while(!constraints_(g.random_reset()));
+                                 DEBUG_MSG("Random genotype with constraints.");
                                  return g;
                                }));
   }
