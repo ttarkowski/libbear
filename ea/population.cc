@@ -59,8 +59,7 @@ operator()(std::size_t lambda) const {
   std::vector<std::future<type>> v{};
   for (std::size_t i = 0; i < lambda; ++i) {
     v.push_back(tp.async<type>(std::launch::async,
-                               [this]() -> type {
-                                 auto g = g_;
+                               [g = g_, this]() mutable -> type {
                                  while(!constraints_(g.random_reset()));
                                  return g;
                                }));
