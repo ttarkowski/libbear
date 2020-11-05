@@ -53,7 +53,23 @@ libbear::random_population::thread_sz = std::thread::hardware_concurrency();
 
 libbear::population
 libbear::random_population::
-operator()(std::size_t lambda) const {
+operator()(std::size_t lambda, bool multithreaded) const {
+  return multithreaded? multithreaded_calc(lambda) : serial_calc(lambda);
+}
+
+libbear::population
+libbear::random_population::
+serial_calc(std::size_t lambda) const {
+  return generate(lambda,
+                  [g = g_, this]() mutable -> genotype {
+                    while(!constraints_(g.random_reset()));
+                    return g;
+                  });
+}
+
+libbear::population
+libbear::random_population::
+multithreaded_calc(std::size_t lambda) const {
   // Serial version generated bottleneck for some conditions.
   using type = genotype;
   thread_pool tp{thread_sz};
