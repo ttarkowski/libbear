@@ -25,11 +25,7 @@ namespace libbear {
       : g_{g}, constraints_{gc}
     {}
 
-    population operator()(std::size_t lambda, bool multithreaded = false) const;
-
-  private:
-    population serial_calc(std::size_t lambda) const;
-    population multithreaded_calc(std::size_t lambda) const;
+    population operator()(std::size_t lambda) const;
 
   private:
     const genotype g_;
